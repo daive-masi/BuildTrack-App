@@ -1,0 +1,1 @@
+ C:\\Users\\isabe\\Desktop\\BUILDTRACK\\buildtrack_app\\.dart_tool\\flutter_build\\cdd0d888716d39e735aea5bd4596b0eb\\native_assets.yaml: 
