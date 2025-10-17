@@ -1,6 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'core/firebase_config.dart';
+import 'core/services/auth_service.dart';
+import 'core/auth_wrapper.dart'; // AJOUTEZ CET IMPORT
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,49 +15,22 @@ class BuildTrackApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'BuildTrack',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('BuildTrack Test')),
-        body: const Center(child: FirebaseTestWidget()),
+    return MultiProvider(
+      providers: [
+        Provider<AuthService>(
+          create: (_) => AuthService(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'BuildTrack',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+        ),
+        home: const AuthWrapper(), // REMPLACEZ LA NAVIGATION ICI
+        debugShowCheckedModeBanner: false,
       ),
     );
-  }
-}
-
-class FirebaseTestWidget extends StatefulWidget {
-  const FirebaseTestWidget({super.key});
-
-  @override
-  State<FirebaseTestWidget> createState() => _FirebaseTestWidgetState();
-}
-
-class _FirebaseTestWidgetState extends State<FirebaseTestWidget> {
-  String message = "Connexion Firebase en cours...";
-
-  @override
-  void initState() {
-    super.initState();
-    _testFirebaseConnection();
-  }
-
-  Future<void> _testFirebaseConnection() async {
-    try {
-      // Test simple : écrire dans Firestore
-      final db = FirebaseFirestore.instance;
-      await db.collection('tests').add({'timestamp': DateTime.now()});
-      setState(() {
-        message = "✅ Connexion Firebase réussie !";
-      });
-    } catch (e) {
-      setState(() {
-        message = "❌ Erreur Firebase : $e";
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(message, style: const TextStyle(fontSize: 18));
   }
 }
