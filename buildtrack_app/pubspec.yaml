@@ -30,6 +30,12 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  # 🆕 NOUVELLES DEPENDANCES QR CODE
+  mobile_scanner: ^4.0.0
+  permission_handler: ^11.0.1
+  geolocator: ^11.0.1
+  image_picker: ^1.0.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

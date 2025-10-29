@@ -1,8 +1,10 @@
+// features/employee/screens/employee_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../models/task_model.dart';
 import '../widgets/task_cart.dart';
+import '../../qr_scanner/screens/qr_scanner_screen.dart'; // ⭐ IMPORT AJOUTÉ
 
 class EmployeeDashboard extends StatelessWidget {
   const EmployeeDashboard({super.key});
@@ -40,11 +42,9 @@ class EmployeeDashboard extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Mon Espace'),
         actions: [
-          // Menu profil
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'profile') {
-                // TODO: Naviguer vers le profil
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Profil - À implémenter')),
                 );
@@ -93,7 +93,13 @@ class EmployeeDashboard extends StatelessWidget {
                   Text('123 Avenue de la Construction, Paris', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: () => Navigator.pushNamed(context, '/qr-scanner'),
+                    // ⭐⭐ CORRECTION ICI - Navigation directe ⭐⭐
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const QrScannerScreen()),
+                      );
+                    },
                     icon: const Icon(Icons.qr_code),
                     label: const Text('Scanner QR Code'),
                   ),
@@ -101,7 +107,6 @@ class EmployeeDashboard extends StatelessWidget {
               ),
             ),
           ),
-
           // En-tête tâches
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -116,7 +121,6 @@ class EmployeeDashboard extends StatelessWidget {
               ],
             ),
           ),
-
           // Liste des tâches
           Expanded(
             child: ListView.builder(
@@ -129,12 +133,10 @@ class EmployeeDashboard extends StatelessWidget {
           ),
         ],
       ),
-
       // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
-          // TODO: Implémenter la navigation entre les onglets
           if (index == 1) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Historique - À implémenter')),
@@ -151,6 +153,17 @@ class EmployeeDashboard extends StatelessWidget {
             label: 'Historique',
           ),
         ],
+      ),
+      // Floating Action Button pour scanner le QR code
+      floatingActionButton: FloatingActionButton(
+        // ⭐⭐ CORRECTION ICI - Navigation directe ⭐⭐
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const QrScannerScreen()),
+          );
+        },
+        child: const Icon(Icons.qr_code_scanner),
       ),
     );
   }
@@ -172,7 +185,6 @@ class EmployeeDashboard extends StatelessWidget {
                 Navigator.of(context).pop();
                 try {
                   await authService.signOut();
-                  // La redirection est gérée par AuthWrapper
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Erreur de déconnexion: $e')),

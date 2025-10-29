@@ -1,3 +1,4 @@
+// core/services/auth_service.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,9 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.standard();
+
+  // ⭐ AJOUTEZ CETTE MÉTHODE ⭐
+  User? get currentUser => _auth.currentUser;
 
   // --- Connexion avec email/mot de passe ---
   Future<Employee?> signInWithEmail(String email, String password) async {
@@ -37,19 +41,16 @@ class AuthService {
         throw Exception('Connexion Google annulée par l\'utilisateur');
       }
       print('✅ Google Sign-In réussi: ${googleUser.email}');
-
       // Étape 2: Authentification
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       if (googleAuth.accessToken == null && googleAuth.idToken == null) {
         throw Exception('Tokens d\'authentification manquants');
       }
-
       // Étape 3: Création credentials Firebase
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-
       // Étape 4: Connexion Firebase
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
       if (userCredential.user == null) {
