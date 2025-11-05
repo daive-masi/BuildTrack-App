@@ -1,15 +1,15 @@
 // core/services/auth_service.dart
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/user_model.dart';
 
-class AuthService {
+class AuthService with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.standard();
 
-  // ⭐ AJOUTEZ CETTE MÉTHODE ⭐
   User? get currentUser => _auth.currentUser;
 
   // --- Connexion avec email/mot de passe ---
@@ -24,6 +24,7 @@ class AuthService {
         throw Exception('Aucun utilisateur retourné par Firebase');
       }
       print('✅ Connexion réussie pour: ${credential.user!.uid}');
+      notifyListeners(); // ⭐ Notifie les écouteurs après connexion
       return await _getOrCreateEmployee(credential.user!);
     } catch (e) {
       print('❌ Erreur connexion email: $e');
@@ -57,6 +58,7 @@ class AuthService {
         throw Exception('Aucun utilisateur Firebase retourné');
       }
       print('✅ Connexion Firebase réussie: ${userCredential.user!.uid}');
+      notifyListeners(); // ⭐ Notifie les écouteurs après connexion
       return await _getOrCreateEmployee(userCredential.user!);
     } on FirebaseAuthException catch (e) {
       print('❌ Erreur Firebase Auth: ${e.code} - ${e.message}');
@@ -94,6 +96,7 @@ class AuthService {
         employee.toFirestore(),
       );
       print('✅ Employé inscrit et enregistré dans Firestore: ${employee.id}');
+      notifyListeners(); // ⭐ Notifie les écouteurs après inscription
       return employee;
     } catch (e) {
       print('❌ Erreur inscription employé: $e');
@@ -140,6 +143,7 @@ class AuthService {
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
+      notifyListeners(); // ⭐ Notifie les écouteurs après déconnexion
       print('✅ Déconnexion réussie');
     } catch (e) {
       print('❌ Erreur déconnexion: $e');

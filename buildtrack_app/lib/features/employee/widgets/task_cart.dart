@@ -4,7 +4,7 @@ import '../../../models/task_model.dart'; // AJOUTEZ CET IMPORT
 class TaskCard extends StatelessWidget {
   final ProjectTask task;
 
-  const TaskCard({super.key, required this.task});
+  const TaskCard({super.key, required this.task, required Future<Null> Function(dynamic newStatus) onStatusChanged});
 
   @override
   Widget build(BuildContext context) {

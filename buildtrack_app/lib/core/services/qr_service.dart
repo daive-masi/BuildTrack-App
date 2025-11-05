@@ -4,30 +4,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/project_model.dart';
 import '../../models/attendance_model.dart';
 
-class QrService {
+class QrService with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Scanner un QR code et récupérer le projet
   Future<Project?> scanQrCode(String qrData) async {
     try {
       print('🔍 Scan QR code: $qrData');
-
       final querySnapshot = await _firestore
           .collection('projects')
           .where('qrCode', isEqualTo: qrData)
           .where('isActive', isEqualTo: true)
           .limit(1)
           .get();
-
       if (querySnapshot.docs.isEmpty) {
         print('❌ Aucun projet trouvé pour ce QR code');
         return null;
       }
-
       final doc = querySnapshot.docs.first;
       final project = Project.fromFirestore(doc.data());
       print('✅ Projet trouvé: ${project.name}');
-
       return project;
     } catch (e) {
       print('❌ Erreur scan QR: $e');
@@ -44,12 +40,10 @@ class QrService {
   }) async {
     try {
       print('📍 Pointage employé $employeeId sur projet $projectId');
-
       final activeAttendance = await _getActiveAttendance(employeeId);
       if (activeAttendance != null) {
         throw 'Vous êtes déjà pointé sur le chantier: ${activeAttendance.projectName}';
       }
-
       final attendance = Attendance(
         id: '${employeeId}_${DateTime.now().millisecondsSinceEpoch}',
         employeeId: employeeId,
@@ -58,13 +52,12 @@ class QrService {
         checkInTime: DateTime.now(),
         location: location,
       );
-
       await _firestore
           .collection('attendances')
           .doc(attendance.id)
           .set(attendance.toFirestore());
-
       print('✅ Pointage réussi: ${attendance.id}');
+      notifyListeners(); // ⭐ Notifie les écouteurs après un pointage réussi
       return attendance;
     } catch (e) {
       print('❌ Erreur pointage: $e');
@@ -76,20 +69,18 @@ class QrService {
   Future<void> checkOutFromProject(String employeeId) async {
     try {
       print('🚪 Pointage de sortie pour: $employeeId');
-
       final activeAttendance = await _getActiveAttendance(employeeId);
       if (activeAttendance == null) {
         throw 'Aucun pointage actif trouvé';
       }
-
       await _firestore
           .collection('attendances')
           .doc(activeAttendance.id)
           .update({
         'checkOutTime': Timestamp.fromDate(DateTime.now()),
       });
-
       print('✅ Pointage de sortie réussi');
+      notifyListeners(); // ⭐ Notifie les écouteurs après un pointage de sortie réussi
     } catch (e) {
       print('❌ Erreur pointage sortie: $e');
       rethrow;
@@ -104,11 +95,9 @@ class QrService {
         .where('checkOutTime', isNull: true)
         .limit(1)
         .get();
-
     if (querySnapshot.docs.isEmpty) {
       return null;
     }
-
     return Attendance.fromFirestore(querySnapshot.docs.first.data());
   }
 
