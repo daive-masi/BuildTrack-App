@@ -219,4 +219,38 @@ class AuthService with ChangeNotifier {
   bool isUserLoggedIn() {
     return _auth.currentUser != null;
   }
+
+  // Dans auth_service.dart - ajoutez ces méthodes
+  Future<Employee?> getEmployeeData(String employeeId) async {
+    try {
+      final doc = await _firestore.collection('employees').doc(employeeId).get();
+      if (doc.exists) {
+        return Employee.fromFirestore(doc.data()!);
+      }
+      return null;
+    } catch (e) {
+      print('❌ Erreur récupération employé: $e');
+      return null;
+    }
+  }
+
+  Future<void> updateEmployeeProfile({
+    required String employeeId,
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) async {
+    try {
+      await _firestore.collection('employees').doc(employeeId).update({
+        'firstName': firstName,
+        'lastName': lastName,
+        'phone': phone,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      print('✅ Profil employé mis à jour: $employeeId');
+    } catch (e) {
+      print('❌ Erreur mise à jour profil: $e');
+      throw 'Erreur lors de la mise à jour du profil';
+    }
+  }
 }

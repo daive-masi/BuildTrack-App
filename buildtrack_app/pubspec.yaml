@@ -34,8 +34,9 @@ dependencies:
   mobile_scanner: ^4.0.0
   permission_handler: ^11.0.1
   geolocator: ^11.0.1
-  image_picker: ^1.0.4
+  image_picker: ^1.2.0
   firebase_storage: ^11.6.5
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

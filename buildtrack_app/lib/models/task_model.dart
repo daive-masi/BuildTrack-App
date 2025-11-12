@@ -19,6 +19,33 @@ enum TaskStatus {
   }
 
   String get firestoreValue => toString().split('.').last;
+
+
+  Color get statusColor {
+    switch (this) {
+      case TaskStatus.completed:
+        return Colors.green;
+      case TaskStatus.inProgress:
+        return Colors.orange;
+      case TaskStatus.blocked:
+        return Colors.red;
+      case TaskStatus.pending:
+        return Colors.grey;
+    }
+  }
+
+  IconData get statusIcon {
+    switch (this) {
+      case TaskStatus.completed:
+        return Icons.check_circle;
+      case TaskStatus.inProgress:
+        return Icons.play_arrow;
+      case TaskStatus.blocked:
+        return Icons.error;
+      case TaskStatus.pending:
+        return Icons.schedule;
+    }
+  }
 }
 
 class ProjectTask {
@@ -86,31 +113,6 @@ class ProjectTask {
     };
   }
 
-  Color get statusColor {
-    switch (status) {
-      case TaskStatus.completed:
-        return Colors.green;
-      case TaskStatus.inProgress:
-        return Colors.orange;
-      case TaskStatus.blocked:
-        return Colors.red;
-      case TaskStatus.pending:
-        return Colors.grey;
-    }
-  }
-
-  IconData get statusIcon {
-    switch (status) {
-      case TaskStatus.completed:
-        return Icons.check_circle;
-      case TaskStatus.inProgress:
-        return Icons.play_arrow;
-      case TaskStatus.blocked:
-        return Icons.error;
-      case TaskStatus.pending:
-        return Icons.schedule;
-    }
-  }
 
   String get formattedDueDate {
     final now = DateTime.now();

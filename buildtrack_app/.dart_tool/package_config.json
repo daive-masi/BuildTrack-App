@@ -338,6 +338,12 @@
       "languageVersion": "3.6"
     },
     {
+      "name": "intl",
+      "rootUri": "file:///C:/Users/isabe/AppData/Local/Pub/Cache/hosted/pub.dev/intl-0.20.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "js",
       "rootUri": "file:///C:/Users/isabe/AppData/Local/Pub/Cache/hosted/pub.dev/js-0.6.7",
       "packageUri": "lib/",
@@ -626,7 +632,7 @@
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2025-11-05T13:36:51.577681Z",
+  "generated": "2025-11-12T13:46:39.270548Z",
   "generator": "pub",
   "generatorVersion": "3.6.1",
   "flutterRoot": "file:///C:/Users/isabe/Documents/flutter",

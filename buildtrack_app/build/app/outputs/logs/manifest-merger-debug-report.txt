@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 application
-INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:2:5-33:19
+INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:19:5-85:19
 INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml
 MERGED from [:cloud_firestore] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\cloud_firestore\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-13:19
 MERGED from [:cloud_firestore] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\cloud_firestore\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-13:19
@@ -78,9 +78,13 @@ MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\isabe\.gradle\c
 		ADDED from [androidx.core:core:1.13.1] C:\Users\isabe\.gradle\caches\transforms-3\b2884dbf4ee3398b2907745768baeed2\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 	android:name
 		INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml
+provider#androidx.core.content.FileProvider
+INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:47:9-57:20
+	android:authorities
+		INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml
 manifest
-ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:1:1-45:12
-MERGED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:1:1-45:12
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:1:1-94:12
+MERGED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:1:1-94:12
 INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml:1:1-7:12
@@ -187,27 +191,35 @@ MERGED from [io.grpc:grpc-android:1.57.2] C:\Users\isabe\.gradle\caches\transfor
 MERGED from [com.google.firebase:protolite-well-known-types:18.0.0] C:\Users\isabe\.gradle\caches\transforms-3\fd99cd15c8f25d1b6c98cbba481ace54\transformed\jetified-protolite-well-known-types-18.0.0\AndroidManifest.xml:2:1-11:12
 MERGED from [com.google.android.odml:image:1.0.0-beta1] C:\Users\isabe\.gradle\caches\transforms-3\2e212a60b024ca93afb37efda3030080\transformed\jetified-image-1.0.0-beta1\AndroidManifest.xml:2:1-9:12
 	package
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:3:5-41
 		INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml
 	android:versionName
 		INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml
+	xmlns:tools
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:2:5-51
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:2:5-51
 	android:versionCode
 		INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:1:11-69
-queries
-ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:39:5-44:15
-intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
-ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:40:9-43:18
-action#android.intent.action.PROCESS_TEXT
-ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:41:13-72
+uses-permission#android.permission.CAMERA
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:6:5-65
+MERGED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-65
+MERGED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-65
 	android:name
-		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:41:21-70
-data
-ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:42:13-50
-	android:mimeType
-		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:42:19-48
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:6:22-62
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:7:5-81
+	android:name
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:7:22-78
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:8:5-80
+	android:name
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:8:22-77
 uses-permission#android.permission.INTERNET
-ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml:6:5-66
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:9:5-67
+MERGED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:9:5-67
+MERGED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:9:5-67
 MERGED from [:google_sign_in_android] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\google_sign_in_android\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-67
 MERGED from [:google_sign_in_android] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\google_sign_in_android\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-67
 MERGED from [com.google.firebase:firebase-firestore:24.11.0] C:\Users\isabe\.gradle\caches\transforms-3\63cffab5cf1ce652f0ef6733a178736c\transformed\jetified-firebase-firestore-24.11.0\AndroidManifest.xml:11:5-67
@@ -221,7 +233,53 @@ MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] C:\Users\isabe\.grad
 MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\isabe\.gradle\caches\transforms-3\1e2d68fbed806b4ef412016a2bba27fa\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:26:5-67
 MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\isabe\.gradle\caches\transforms-3\1e2d68fbed806b4ef412016a2bba27fa\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:26:5-67
 	android:name
-		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml:6:22-64
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:9:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:10:5-79
+MERGED from [com.google.firebase:firebase-firestore:24.11.0] C:\Users\isabe\.gradle\caches\transforms-3\63cffab5cf1ce652f0ef6733a178736c\transformed\jetified-firebase-firestore-24.11.0\AndroidManifest.xml:10:5-79
+MERGED from [com.google.firebase:firebase-firestore:24.11.0] C:\Users\isabe\.gradle\caches\transforms-3\63cffab5cf1ce652f0ef6733a178736c\transformed\jetified-firebase-firestore-24.11.0\AndroidManifest.xml:10:5-79
+MERGED from [com.google.firebase:firebase-auth:22.3.1] C:\Users\isabe\.gradle\caches\transforms-3\17b5492036b6b74738e841eff9e4538e\transformed\jetified-firebase-auth-22.3.1\AndroidManifest.xml:26:5-79
+MERGED from [com.google.firebase:firebase-auth:22.3.1] C:\Users\isabe\.gradle\caches\transforms-3\17b5492036b6b74738e841eff9e4538e\transformed\jetified-firebase-auth-22.3.1\AndroidManifest.xml:26:5-79
+MERGED from [com.google.firebase:firebase-storage:20.3.0] C:\Users\isabe\.gradle\caches\transforms-3\d798ce4a8217613bf8316eaeee1ed804\transformed\jetified-firebase-storage-20.3.0\AndroidManifest.xml:23:5-79
+MERGED from [com.google.firebase:firebase-storage:20.3.0] C:\Users\isabe\.gradle\caches\transforms-3\d798ce4a8217613bf8316eaeee1ed804\transformed\jetified-firebase-storage-20.3.0\AndroidManifest.xml:23:5-79
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] C:\Users\isabe\.gradle\caches\transforms-3\9fdf449edf44e35a74e4c5c87be838a6\transformed\jetified-recaptcha-18.4.0\AndroidManifest.xml:8:5-79
+MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] C:\Users\isabe\.gradle\caches\transforms-3\9fdf449edf44e35a74e4c5c87be838a6\transformed\jetified-recaptcha-18.4.0\AndroidManifest.xml:8:5-79
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\isabe\.gradle\caches\transforms-3\1e2d68fbed806b4ef412016a2bba27fa\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:25:5-79
+MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\isabe\.gradle\caches\transforms-3\1e2d68fbed806b4ef412016a2bba27fa\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:25:5-79
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\isabe\.gradle\caches\transforms-3\58ebe49c658431da615f062b6998e01b\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:22:5-79
+MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\isabe\.gradle\caches\transforms-3\58ebe49c658431da615f062b6998e01b\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:22:5-79
+MERGED from [io.grpc:grpc-android:1.57.2] C:\Users\isabe\.gradle\caches\transforms-3\b103491ae05866ea1147bb4e08840d77\transformed\jetified-grpc-android-1.57.2\AndroidManifest.xml:7:5-79
+MERGED from [io.grpc:grpc-android:1.57.2] C:\Users\isabe\.gradle\caches\transforms-3\b103491ae05866ea1147bb4e08840d77\transformed\jetified-grpc-android-1.57.2\AndroidManifest.xml:7:5-79
+	android:name
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:10:22-76
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:11:5-79
+	android:name
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:11:22-76
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:12:5-81
+	android:name
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:12:22-78
+uses-feature#android.hardware.camera
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:15:5-17:36
+MERGED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:9:5-11:36
+MERGED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:9:5-11:36
+	android:required
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:17:9-33
+	android:name
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:16:9-47
+queries
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:88:5-93:15
+intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:89:9-92:18
+action#android.intent.action.PROCESS_TEXT
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:90:13-72
+	android:name
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:90:21-70
+data
+ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:91:13-50
+	android:mimeType
+		ADDED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\main\AndroidManifest.xml:91:19-48
 uses-sdk
 INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\android\app\src\debug\AndroidManifest.xml
@@ -536,32 +594,6 @@ ADDED from [:geolocator_android] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_ap
 		ADDED from [:geolocator_android] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-53
 	android:name
 		ADDED from [:geolocator_android] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\geolocator_android\intermediates\merged_manifest\debug\AndroidManifest.xml:9:13-77
-uses-permission#android.permission.CAMERA
-ADDED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:7:5-65
-	android:name
-		ADDED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:7:22-62
-uses-feature#android.hardware.camera
-ADDED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:9:5-11:36
-	android:required
-		ADDED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:11:9-33
-	android:name
-		ADDED from [:mobile_scanner] C:\Users\isabe\Desktop\BUILDTRACK\buildtrack_app\build\mobile_scanner\intermediates\merged_manifest\debug\AndroidManifest.xml:10:9-47
-uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from [com.google.firebase:firebase-firestore:24.11.0] C:\Users\isabe\.gradle\caches\transforms-3\63cffab5cf1ce652f0ef6733a178736c\transformed\jetified-firebase-firestore-24.11.0\AndroidManifest.xml:10:5-79
-MERGED from [com.google.firebase:firebase-auth:22.3.1] C:\Users\isabe\.gradle\caches\transforms-3\17b5492036b6b74738e841eff9e4538e\transformed\jetified-firebase-auth-22.3.1\AndroidManifest.xml:26:5-79
-MERGED from [com.google.firebase:firebase-auth:22.3.1] C:\Users\isabe\.gradle\caches\transforms-3\17b5492036b6b74738e841eff9e4538e\transformed\jetified-firebase-auth-22.3.1\AndroidManifest.xml:26:5-79
-MERGED from [com.google.firebase:firebase-storage:20.3.0] C:\Users\isabe\.gradle\caches\transforms-3\d798ce4a8217613bf8316eaeee1ed804\transformed\jetified-firebase-storage-20.3.0\AndroidManifest.xml:23:5-79
-MERGED from [com.google.firebase:firebase-storage:20.3.0] C:\Users\isabe\.gradle\caches\transforms-3\d798ce4a8217613bf8316eaeee1ed804\transformed\jetified-firebase-storage-20.3.0\AndroidManifest.xml:23:5-79
-MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] C:\Users\isabe\.gradle\caches\transforms-3\9fdf449edf44e35a74e4c5c87be838a6\transformed\jetified-recaptcha-18.4.0\AndroidManifest.xml:8:5-79
-MERGED from [com.google.android.recaptcha:recaptcha:18.4.0] C:\Users\isabe\.gradle\caches\transforms-3\9fdf449edf44e35a74e4c5c87be838a6\transformed\jetified-recaptcha-18.4.0\AndroidManifest.xml:8:5-79
-MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\isabe\.gradle\caches\transforms-3\1e2d68fbed806b4ef412016a2bba27fa\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:25:5-79
-MERGED from [com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\isabe\.gradle\caches\transforms-3\1e2d68fbed806b4ef412016a2bba27fa\transformed\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:25:5-79
-MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\isabe\.gradle\caches\transforms-3\58ebe49c658431da615f062b6998e01b\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:22:5-79
-MERGED from [com.google.android.datatransport:transport-runtime:2.2.6] C:\Users\isabe\.gradle\caches\transforms-3\58ebe49c658431da615f062b6998e01b\transformed\jetified-transport-runtime-2.2.6\AndroidManifest.xml:22:5-79
-MERGED from [io.grpc:grpc-android:1.57.2] C:\Users\isabe\.gradle\caches\transforms-3\b103491ae05866ea1147bb4e08840d77\transformed\jetified-grpc-android-1.57.2\AndroidManifest.xml:7:5-79
-MERGED from [io.grpc:grpc-android:1.57.2] C:\Users\isabe\.gradle\caches\transforms-3\b103491ae05866ea1147bb4e08840d77\transformed\jetified-grpc-android-1.57.2\AndroidManifest.xml:7:5-79
-	android:name
-		ADDED from [com.google.firebase:firebase-firestore:24.11.0] C:\Users\isabe\.gradle\caches\transforms-3\63cffab5cf1ce652f0ef6733a178736c\transformed\jetified-firebase-firestore-24.11.0\AndroidManifest.xml:10:22-76
 meta-data#com.google.firebase.components:com.google.firebase.firestore.FirebaseFirestoreKtxRegistrar
 ADDED from [com.google.firebase:firebase-firestore:24.11.0] C:\Users\isabe\.gradle\caches\transforms-3\63cffab5cf1ce652f0ef6733a178736c\transformed\jetified-firebase-firestore-24.11.0\AndroidManifest.xml:17:13-19:85
 	android:value

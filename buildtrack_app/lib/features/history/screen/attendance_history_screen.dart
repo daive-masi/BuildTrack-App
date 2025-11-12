@@ -29,24 +29,25 @@ class AttendanceHistoryScreen extends StatelessWidget {
       body: Column(
         children: [
           // Statistiques résumées
-          _buildStatsHeader(context, employeeId),
-
+          _buildStatsHeader(context, employeeId, attendanceService),
           // Liste des pointages
           Expanded(
-            child: _buildAttendanceList(context, employeeId),
+            child: _buildAttendanceList(context, employeeId, attendanceService),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatsHeader(BuildContext context, String employeeId) {
+  // MÉTHODE POUR PRENDRE LE SERVICE EN PARAMÈTRE
+  Widget _buildStatsHeader(BuildContext context, String employeeId, AttendanceService attendanceService) {
     return StreamBuilder<Map<String, dynamic>>(
-      stream: Provider.of<AttendanceService>(context).getWorkStats(employeeId),
+      stream: attendanceService.getWorkStats(employeeId),
       builder: (context, snapshot) {
         final stats = snapshot.data ?? {};
-        final totalHours = stats['totalHours'] ?? 0;
-        final weekHours = stats['currentWeekHours'] ?? 0;
+        final totalHours = stats['totalHours']?.toDouble() ?? 0;
+        final weekHours = stats['currentWeekHours']?.toDouble() ?? 0;
+        final monthHours = stats['currentMonthHours']?.toDouble() ?? 0;
         final totalAttendances = stats['totalAttendances'] ?? 0;
 
         return Card(
@@ -65,6 +66,13 @@ class AttendanceHistoryScreen extends StatelessWidget {
                   children: [
                     _buildStatItem('Total heures', '${totalHours.toStringAsFixed(1)}h'),
                     _buildStatItem('Cette semaine', '${weekHours.toStringAsFixed(1)}h'),
+                    _buildStatItem('Ce mois', '${monthHours.toStringAsFixed(1)}h'),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
                     _buildStatItem('Pointages', '$totalAttendances'),
                   ],
                 ),
@@ -76,36 +84,17 @@ class AttendanceHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAttendanceList(BuildContext context, String employeeId) {
+  Widget _buildAttendanceList(BuildContext context, String employeeId, AttendanceService attendanceService) {
     return StreamBuilder<List<Attendance>>(
-      stream: Provider.of<AttendanceService>(context).getEmployeeAttendances(employeeId),
+      stream: attendanceService.getEmployeeAttendances(employeeId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
         if (snapshot.hasError) {
           return Center(child: Text('Erreur: ${snapshot.error}'));
         }
-
         final attendances = snapshot.data ?? [];
-
         if (attendances.isEmpty) {
           return const Center(
             child: Column(
@@ -118,7 +107,6 @@ class AttendanceHistoryScreen extends StatelessWidget {
             ),
           );
         }
-
         return ListView.builder(
           itemCount: attendances.length,
           itemBuilder: (context, index) {
@@ -183,6 +171,22 @@ class AttendanceHistoryScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+        ),
+      ],
     );
   }
 

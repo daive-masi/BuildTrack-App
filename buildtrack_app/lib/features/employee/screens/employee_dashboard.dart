@@ -6,6 +6,7 @@ import '../../../core/services/task_service.dart';
 import '../../../core/services/attendance_service.dart';
 import '../../../models/task_model.dart';
 import '../../history/screen/attendance_history_screen.dart';
+import '../../profile/screen/employee_profile_screen.dart';
 import '../widgets/task_cart.dart';
 import '../../qr_scanner/screens/qr_scanner_screen.dart';
 
@@ -41,10 +42,14 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'profile') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profil - À implémenter')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EmployeeProfileScreen(),
+                  ),
                 );
-              } else if (value == 'logout') {
+              }
+              else if (value == 'logout') {
                 _showLogoutDialog(context, authService);
               }
             },

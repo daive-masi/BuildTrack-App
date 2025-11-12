@@ -10,3 +10,4 @@ string google_storage_bucket
 string project_id
 style LaunchTheme
 style NormalTheme
+xml file_paths

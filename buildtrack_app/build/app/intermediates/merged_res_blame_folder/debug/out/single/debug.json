@@ -4,6 +4,10 @@
         "source": "com.example.buildtrack_app-main-45:/mipmap-hdpi/ic_launcher.png"
     },
     {
+        "merged": "com.example.buildtrack_app-merged_res-51:/xml_file_paths.xml.flat",
+        "source": "com.example.buildtrack_app-main-45:/xml/file_paths.xml"
+    },
+    {
         "merged": "com.example.buildtrack_app-merged_res-51:/drawable-v21_launch_background.xml.flat",
         "source": "com.example.buildtrack_app-main-45:/drawable-v21/launch_background.xml"
     },
