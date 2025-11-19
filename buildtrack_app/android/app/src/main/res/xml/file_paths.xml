@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Chemin racine pour les fichiers externes -->
+    <external-path name="external" path="." />
+
+    <!-- Chemin pour les fichiers internes de l'app -->
+    <files-path name="files" path="." />
+
+    <!-- Chemin pour le cache -->
+    <cache-path name="cache" path="." />
+
+    <!-- Chemin pour les fichiers externes de l'app -->
+    <external-files-path name="external_files" path="." />
+
+    <!-- Chemin pour le cache externe -->
+    <external-cache-path name="external_cache" path="." />
+
+    <!-- Chemin spécifique pour les photos de la caméra (image_picker) -->
+    <external-files-path name="camera_photos" path="Pictures/" />
+
+    <!-- Chemin pour les images de la galerie -->
+    <external-files-path name="gallery_images" path="Pictures/" />
+
+    <!-- Chemin pour les téléchargements -->
+    <external-files-path name="downloads" path="Download/" />
+
+    <!-- Chemin pour les documents -->
+    <external-files-path name="documents" path="Documents/" />
+
+    <!-- Chemin pour les fichiers temporaires -->
+    <external-files-path name="temp" path="temp/" />
+</paths>

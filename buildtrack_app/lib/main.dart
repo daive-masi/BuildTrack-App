@@ -1,10 +1,35 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'core/firebase_config.dart';
+import 'core/services/auth_service.dart';
+import 'core/services/qr_service.dart';
+import 'core/services/storage_service.dart';
+import 'core/services/task_service.dart';
+import 'core/services/attendance_service.dart';
+import 'core/services/notification_service.dart';
+import 'core/auth_wrapper.dart';
+
+/// 🔔 Gestion des messages quand l'app est fermée
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  // Tu peux ajouter un print ici pour tester :
+  print('Message reçu en background: ${message.notification?.title}');
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeFirebase();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Initialisation notifications locales
+  final notificationService = NotificationService();
+  await notificationService.initNotifications();
+
   runApp(const BuildTrackApp());
 }
 
@@ -13,49 +38,25 @@ class BuildTrackApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'BuildTrack',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('BuildTrack Test')),
-        body: const Center(child: FirebaseTestWidget()),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthService>(create: (_) => AuthService()),
+        ChangeNotifierProvider<QrService>(create: (_) => QrService()),
+        ChangeNotifierProvider<TaskService>(create: (_) => TaskService()),
+        ChangeNotifierProvider<AttendanceService>(create: (_) => AttendanceService()),
+        Provider<StorageService>(create: (_) => StorageService()),
+        Provider<NotificationService>(create: (_) => NotificationService()),
+      ],
+      child: MaterialApp(
+        title: 'BuildTrack',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+        ),
+        home: const AuthWrapper(),
+        debugShowCheckedModeBanner: false,
       ),
     );
-  }
-}
-
-class FirebaseTestWidget extends StatefulWidget {
-  const FirebaseTestWidget({super.key});
-
-  @override
-  State<FirebaseTestWidget> createState() => _FirebaseTestWidgetState();
-}
-
-class _FirebaseTestWidgetState extends State<FirebaseTestWidget> {
-  String message = "Connexion Firebase en cours...";
-
-  @override
-  void initState() {
-    super.initState();
-    _testFirebaseConnection();
-  }
-
-  Future<void> _testFirebaseConnection() async {
-    try {
-      // Test simple : écrire dans Firestore
-      final db = FirebaseFirestore.instance;
-      await db.collection('tests').add({'timestamp': DateTime.now()});
-      setState(() {
-        message = "✅ Connexion Firebase réussie !";
-      });
-    } catch (e) {
-      setState(() {
-        message = "❌ Erreur Firebase : $e";
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(message, style: const TextStyle(fontSize: 18));
   }
 }
