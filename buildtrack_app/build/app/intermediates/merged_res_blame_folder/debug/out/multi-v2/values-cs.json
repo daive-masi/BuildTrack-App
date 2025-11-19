@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.buildtrack_app-mergeDebugResources-49:/values-cs/values-cs.xml",
+            "outputFile": "com.example.buildtrack_app-mergeDebugResources-52:/values-cs/values-cs.xml",
             "map": [
                 {
                     "source": "C:\\Users\\isabe\\.gradle\\caches\\transforms-3\\b2884dbf4ee3398b2907745768baeed2\\transformed\\core-1.13.1\\res\\values-cs\\values-cs.xml",

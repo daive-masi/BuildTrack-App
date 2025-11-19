@@ -1,42 +1,47 @@
 name: buildtrack_app
-description: "A new Flutter project."
+description: "Une application Flutter pour le suivi des chantiers et des tâches."
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.6.1 <4.0.0'  # CORRIGÉ
+  sdk: '>=3.6.1 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
-  # FIREBASE CORE - AVEC VERSIONS EXPLICITES
+  # 🔥 FIREBASE CORE - AVEC VERSIONS STABLES
   firebase_core: ^2.24.0
   firebase_auth: ^4.14.0
   cloud_firestore: ^4.13.0
+  firebase_storage: ^11.6.5
+  firebase_messaging: ^14.9.1  # ⭐ NOUVEAU: Notifications push
 
-  # AUTHENTIFICATION - AVEC VERSIONS EXPLICITES
+  # 🔒 AUTHENTIFICATION
   google_sign_in: ^6.1.5
-  # sign_in_with_apple: ^5.0.0  # OPTIONNEL POUR L'INSTANT
 
-  # UI & NAVIGATION - AVEC VERSIONS EXPLICITES
+  # 📱 UI & NAVIGATION
   provider: ^6.1.1
-  # flutter_svg: ^2.0.7  # OPTIONNEL POUR L'INSTANT
-  qr_flutter:
-
-  # STORAGE & UTILS - AVEC VERSIONS EXPLICITES
-  shared_preferences: ^2.2.2
-  # crypto: ^3.0.3  # OPTIONNEL POUR L'INSTANT
-
   cupertino_icons: ^1.0.8
+  mobile_scanner: ^4.0.0  # Scanner QR
+  permission_handler: ^11.0.1  # Gestion des permissions
+  intl: ^0.20.2  # Internationalisation
 
-  # 🆕 NOUVELLES DEPENDANCES QR CODE
-  mobile_scanner: ^4.0.0
-  permission_handler: ^11.0.1
+  # 📊 GRAPHIQUES
+  fl_chart: ^0.68.0  # ⭐ NOUVEAU: Graphiques animés
+
+  # 📍 GÉOLOCALISATION & IMAGES
   geolocator: ^11.0.1
   image_picker: ^1.2.0
-  firebase_storage: ^11.6.5
-  intl: ^0.20.2
+
+  # 📝 TÂCHES & INTERACTIONS
+  drag_and_drop_lists: ^0.4.2 # ⭐ NOUVEAU: Drag & drop des tâches
+
+  # 🔔 NOTIFICATIONS
+  flutter_local_notifications: ^17.1.2  # ⭐ NOUVEAU: Notifications locales
+
+  # 📄 STORAGE & UTILS
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.buildtrack_app-mergeDebugResources-49:/values-en-rAU/values-en-rAU.xml",
+            "outputFile": "com.example.buildtrack_app-mergeDebugResources-52:/values-en-rAU/values-en-rAU.xml",
             "map": [
                 {
                     "source": "C:\\Users\\isabe\\.gradle\\caches\\transforms-3\\68e142ef8359c595e6a0cf974c40276a\\transformed\\preference-1.2.1\\res\\values-en-rAU\\values-en-rAU.xml",

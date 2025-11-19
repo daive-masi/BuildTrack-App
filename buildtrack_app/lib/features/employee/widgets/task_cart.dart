@@ -264,7 +264,11 @@ class _TaskCardState extends State<TaskCard> {
         );
 
         // Ajouter l'URL à la tâche
-        await taskService.addTaskProof(widget.task.id, downloadUrl);
+        await taskService.addTaskProof(
+          taskId: widget.task.id,
+          imageUrls: [downloadUrl],
+        );
+
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Photo preuve ajoutée avec succès')),

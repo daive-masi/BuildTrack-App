@@ -32,7 +32,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     setState(() => _isUploading = true);
     try {
       final url = await storageService.uploadTaskImage(file, widget.task.id, 'proof.jpg');
-      await taskService.addTaskProof(widget.task.id, url);
+      await taskService.addTaskProof(
+        taskId: widget.task.id,
+        imageUrls: [url],
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Photo ajoutée avec succès')),
       );

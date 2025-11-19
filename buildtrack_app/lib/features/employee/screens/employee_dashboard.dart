@@ -1,6 +1,7 @@
 // features/employee/screens/employee_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/task_service.dart';
 import '../../../core/services/attendance_service.dart';
@@ -21,11 +22,22 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
   int _currentIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    // Appel à l'injecteur de tâches après un court délai pour s'assurer que le contexte est prêt
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final taskService = Provider.of<TaskService>(context, listen: false);
+      final currentUser = Provider.of<AuthService>(context, listen: false).currentUser;
+      if (currentUser != null) {
+        taskService.injectSampleTasks(currentUser.uid); // Injection des tâches d'exemple
+      }
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     final taskService = Provider.of<TaskService>(context);
     final attendanceService = Provider.of<AttendanceService>(context);
-
     final currentUser = authService.currentUser;
     final employeeId = currentUser?.uid;
 
@@ -48,8 +60,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                     builder: (context) => const EmployeeProfileScreen(),
                   ),
                 );
-              }
-              else if (value == 'logout') {
+              } else if (value == 'logout') {
                 _showLogoutDialog(context, authService);
               }
             },
@@ -85,7 +96,6 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           setState(() {
             _currentIndex = index;
           });
-
           if (index == 1) {
             Navigator.push(
               context,
@@ -122,7 +132,6 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           stream: attendanceService.getCurrentProject(employeeId),
           builder: (context, snapshot) {
             final currentProject = snapshot.data;
-
             return Card(
               margin: const EdgeInsets.all(16),
               child: Padding(
@@ -132,7 +141,6 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
                   children: [
                     Text('Chantier actuel', style: TextStyle(fontSize: 14, color: Colors.grey[600])),
                     const SizedBox(height: 8),
-
                     if (currentProject != null) ...[
                       Text(
                         currentProject['projectName'] ?? 'Chantier inconnu',
@@ -170,6 +178,46 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
             );
           },
         ),
+
+        // ⭐ NOUVEAU: Statistiques des tâches
+        StreamBuilder<List<ProjectTask>>(
+          stream: taskService.getEmployeeTasks(employeeId),
+          builder: (context, snapshot) {
+            final tasks = snapshot.data ?? [];
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      const Text(
+                        "Statistiques de mes tâches",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12),
+                      if (tasks.isNotEmpty)
+                        TaskStatsChart(tasks: tasks)
+                      else
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text(
+                              "Aucune donnée disponible pour les statistiques",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+
         // En-tête tâches
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -190,6 +238,7 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
             ],
           ),
         ),
+
         // Liste des tâches
         Expanded(
           child: StreamBuilder<List<ProjectTask>>(
@@ -242,12 +291,12 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
     );
   }
 
+  // ... (le reste des méthodes reste inchangé)
   Widget _buildFloatingActionButton(BuildContext context, AttendanceService attendanceService, String employeeId) {
     return StreamBuilder<Map<String, dynamic>?>(
       stream: attendanceService.getCurrentProject(employeeId),
       builder: (context, snapshot) {
         final isOnSite = snapshot.data != null;
-
         return FloatingActionButton(
           onPressed: () {
             if (isOnSite) {
@@ -369,6 +418,95 @@ class _EmployeeDashboardState extends State<EmployeeDashboard> {
           ],
         );
       },
+    );
+  }
+}
+
+// Widget pour afficher les statistiques des tâches sous forme de graphique
+class TaskStatsChart extends StatelessWidget {
+  final List<ProjectTask> tasks;
+
+  const TaskStatsChart({super.key, required this.tasks});
+
+  @override
+  Widget build(BuildContext context) {
+    // Compter le nombre de tâches par statut
+    final pendingTasks = tasks.where((task) => task.status == TaskStatus.pending).length;
+    final inProgressTasks = tasks.where((task) => task.status == TaskStatus.inProgress).length;
+    final completedTasks = tasks.where((task) => task.status == TaskStatus.completed).length;
+
+    return SizedBox(
+      height: 200,
+      child: BarChart(
+        BarChartData(
+          alignment: BarChartAlignment.spaceAround,
+          maxY: tasks.length.toDouble(),
+          barTouchData: BarTouchData(enabled: false),
+          titlesData: FlTitlesData(
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  switch (value.toInt()) {
+                    case 0: return const Text('En attente');
+                    case 1: return const Text('En cours');
+                    case 2: return const Text('Terminées');
+                    default: return const Text('');
+                  }
+                },
+              ),
+            ),
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  return Text(value.toInt().toString());
+                },
+              ),
+            ),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          ),
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          groupsSpace: 4,
+          barGroups: [
+            BarChartGroupData(
+              x: 0,
+              barRods: [
+                BarChartRodData(
+                  toY: pendingTasks.toDouble(),
+                  color: Colors.orange,
+                  width: 16,
+                  borderRadius: BorderRadius.zero,
+                ),
+              ],
+            ),
+            BarChartGroupData(
+              x: 1,
+              barRods: [
+                BarChartRodData(
+                  toY: inProgressTasks.toDouble(),
+                  color: Colors.blue,
+                  width: 16,
+                  borderRadius: BorderRadius.zero,
+                ),
+              ],
+            ),
+            BarChartGroupData(
+              x: 2,
+              barRods: [
+                BarChartRodData(
+                  toY: completedTasks.toDouble(),
+                  color: Colors.green,
+                  width: 16,
+                  borderRadius: BorderRadius.zero,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

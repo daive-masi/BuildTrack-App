@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.buildtrack_app-mergeDebugResources-49:/values-hi/values-hi.xml",
+            "outputFile": "com.example.buildtrack_app-mergeDebugResources-52:/values-hi/values-hi.xml",
             "map": [
                 {
                     "source": "C:\\Users\\isabe\\.gradle\\caches\\transforms-3\\bf6e19e94f397b7f6aca85702ae88592\\transformed\\jetified-play-services-basement-18.3.0\\res\\values-hi\\values.xml",

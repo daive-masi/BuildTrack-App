@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.buildtrack_app-mergeDebugResources-49:/values-en-rIN/values-en-rIN.xml",
+            "outputFile": "com.example.buildtrack_app-mergeDebugResources-52:/values-en-rIN/values-en-rIN.xml",
             "map": [
                 {
                     "source": "C:\\Users\\isabe\\.gradle\\caches\\transforms-3\\bb5a5125e57e439427cd66fb993867a0\\transformed\\browser-1.4.0\\res\\values-en-rIN\\values-en-rIN.xml",
