@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "384468892842",
+    "project_id": "buildtrack-prod",
+    "storage_bucket": "buildtrack-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384468892842:android:526a119f040953e45d24d3",
+        "android_client_info": {
+          "package_name": "com.buildtrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2Rhpur54jeFD6Oj51bhloY1qgMvhX5ZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384468892842:android:1109d35dc1c852235d24d3",
+        "android_client_info": {
+          "package_name": "com.buildtrack.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2Rhpur54jeFD6Oj51bhloY1qgMvhX5ZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
