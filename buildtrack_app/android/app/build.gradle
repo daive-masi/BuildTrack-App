@@ -24,6 +24,24 @@ if (flutterVersionName == null) {
 }
 
 android {
+    flavorDimensions "environment"
+    productFlavors {
+        dev {
+            dimension "environment"
+            applicationId "com.buildtrack.dev"
+            resValue "string", "app_name", "BuildTrack Dev"
+        }
+        staging {
+            dimension "environment"
+            applicationId "com.buildtrack.staging"
+            resValue "string", "app_name", "BuildTrack Staging"
+        }
+        prod {
+            dimension "environment"
+            applicationId "com.buildtrack"
+            resValue "string", "app_name", "BuildTrack"
+        }
+    }
     namespace "com.example.buildtrack_app"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion

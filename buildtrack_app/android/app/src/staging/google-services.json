@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "719795563290",
+    "project_id": "buildtrack-staging",
+    "storage_bucket": "buildtrack-staging.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719795563290:android:4c92eab4a6007a87e35aa3",
+        "android_client_info": {
+          "package_name": "com.buildtrack.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAckEB4wfpLT0qKiY48R51crcW0j0odjJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719795563290:android:883dd94418ce44dbe35aa3",
+        "android_client_info": {
+          "package_name": "com.buildtrack.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAckEB4wfpLT0qKiY48R51crcW0j0odjJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
