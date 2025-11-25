@@ -15,6 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.12.0
         with:
@@ -32,12 +38,18 @@ jobs:
         run: flutter test
         working-directory: ./buildtrack_app
 
-      - name: Build APK without flavors (debug only)
+      - name: Generate debug keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        working-directory: ./buildtrack_app/android
+
+      - name: Build APK - Debug
         run: flutter build apk --debug
         working-directory: ./buildtrack_app
 
-      - name: Verify Build Success
+      - name: Verify Build
         run: |
-          echo "✅ CI Pipeline completed successfully"
-          echo "📱 Basic build verified - Flavors can be tested locally"
+          echo "📱 APK généré avec succès:"
+          ls -la build/app/outputs/flutter-apk/app-debug.apk
+          echo "✅ Build réussi !"
         working-directory: ./buildtrack_app
