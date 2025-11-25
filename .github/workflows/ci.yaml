@@ -15,11 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.12.0
@@ -30,26 +30,25 @@ jobs:
         run: flutter pub get
         working-directory: ./buildtrack_app
 
-      - name: Analyze (ignore warnings)
+      - name: Analyze
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
         working-directory: ./buildtrack_app
 
-      - name: Run simple test
+      - name: Run tests
         run: flutter test
         working-directory: ./buildtrack_app
 
-      - name: Generate debug keystore
+      - name: Build verification
         run: |
-          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-        working-directory: ./buildtrack_app/android
-
-      - name: Build APK - Debug
-        run: flutter build apk --debug
+          echo "🔧 Vérification de la compilation..."
+          flutter build apk --debug
+          echo "✅ Compilation Java 17 réussie !"
         working-directory: ./buildtrack_app
 
-      - name: Verify Build
+      - name: Verify APK
         run: |
-          echo "📱 APK généré avec succès:"
+          echo "📱 APK généré:"
           ls -la build/app/outputs/flutter-apk/app-debug.apk
-          echo "✅ Build réussi !"
+          file build/app/outputs/flutter-apk/app-debug.apk
+          echo "🎉 PIPELINE RÉUSSI !"
         working-directory: ./buildtrack_app
