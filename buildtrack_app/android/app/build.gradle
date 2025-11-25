@@ -64,13 +64,13 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
-    // ⭐⭐ AJOUTEZ CE BLOC ⭐⭐
+
     signingConfigs {
         debug {
-            storeFile file("C:/Users/isabe/.android/debug.keystore")  // ← Chemin absolu
-            storePassword "android"
-            keyAlias "AndroidDebugKey"
-            keyPassword "android"
+            storeFile rootProject.file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
     }
 
