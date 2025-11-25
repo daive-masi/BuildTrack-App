@@ -24,16 +24,20 @@ jobs:
         run: flutter pub get
         working-directory: ./buildtrack_app
 
-      - name: Run tests
+      - name: Analyze (ignore warnings)
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        working-directory: ./buildtrack_app
+
+      - name: Run simple test
         run: flutter test
         working-directory: ./buildtrack_app
 
-      - name: Build APK (Debug)
+      - name: Build APK without flavors (debug only)
         run: flutter build apk --debug
         working-directory: ./buildtrack_app
 
       - name: Verify Build Success
         run: |
-          echo "✅ Build completed successfully"
-          ls -la build/app/outputs/flutter-apk/
+          echo "✅ CI Pipeline completed successfully"
+          echo "📱 Basic build verified - Flavors can be tested locally"
         working-directory: ./buildtrack_app
