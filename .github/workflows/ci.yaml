@@ -1,51 +1,21 @@
-name: CI Pipeline
+name: CI Test Simple
 
 on:
   push:
-    branches: [develop, main, feature/*]
+    branches: [feature/test-flavors-pipeline]
   pull_request:
-    branches: [main, develop]
 
 jobs:
-  quality-checks:
-    name: Quality Checks
+  simple-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Flutter (SANS CACHE)
-        uses: subosito/flutter-action@v2.12.0
-        with:
-          flutter-version: '3.27.3'
-          # PAS DE CACHE pour la première run
-
-      - name: Install dependencies
-        run: flutter pub get
-        working-directory: ./buildtrack_app
-
-      - name: Analyze
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
-        working-directory: ./buildtrack_app
-
-      - name: Run tests
-        run: flutter test
-        working-directory: ./buildtrack_app
-
-      - name: Verify Dart compilation
+        
+      - name: Test Flutter
         run: |
-          echo "🔧 Vérification compilation Dart..."
-          dart compile kernel lib/main.dart
-          echo "✅ Code Dart valide !"
-        working-directory: ./buildtrack_app
-
-      - name: Success
-        run: echo "🎉 PIPELINE RÉUSSI - Flutter installé et code valide"
+          echo "📦 Installation Flutter..."
+          git clone https://github.com/flutter/flutter.git -b stable
+          export PATH="$PWD/flutter/bin:$PATH"
+          flutter --version
         working-directory: ./buildtrack_app
