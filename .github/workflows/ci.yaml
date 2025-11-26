@@ -1,21 +1,43 @@
-name: CI Test Simple
+name: CI Pipeline
 
 on:
   push:
-    branches: [feature/test-flavors-pipeline]
+    branches: [develop, main, 'feature/**']
   pull_request:
+    branches: [main, develop]
 
 jobs:
-  simple-test:
+  flutter-checks:
+    name: Flutter Checks
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Test Flutter
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.3'
+          cache: false
+
+      - name: Show Flutter info
         run: |
-          echo "📦 Installation Flutter..."
-          git clone https://github.com/flutter/flutter.git -b stable
-          export PATH="$PWD/flutter/bin:$PATH"
           flutter --version
+          flutter doctor -v
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: ./buildtrack_app
+
+      - name: Analyze code
+        run: flutter analyze
+        working-directory: ./buildtrack_app
+
+      - name: Run tests
+        run: flutter test
+        working-directory: ./buildtrack_app
+
+      - name: Build debug APK
+        run: flutter build apk --debug
         working-directory: ./buildtrack_app
