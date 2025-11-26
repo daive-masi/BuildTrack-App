@@ -7,10 +7,9 @@ on:
     branches: [main, develop]
 
 jobs:
-  quality-checks:
-    name: Quality Checks
+  setup:
+    name: Setup and Dependencies
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -20,21 +19,22 @@ jobs:
         with:
           flutter-version: '3.27.3'
 
-      - name: Create debug keystore (correct path)
-        run: |
-          # Créer le keystore exactement où Gradle le cherche
-          cd android
-          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          echo "✅ Keystore créé à : $(pwd)/debug.keystore"
-          ls -la debug.keystore
+      - name: Install dependencies
+        run: flutter pub get
         working-directory: ./buildtrack_app
 
-      - name: Verify keystore location
-        run: |
-          echo "🔍 Vérification du keystore..."
-          ls -la android/debug.keystore || echo "❌ Keystore non trouvé dans android/"
-          find . -name "debug.keystore" || echo "❌ Aucun keystore trouvé"
-        working-directory: ./buildtrack_app
+  analyze:
+    name: Flutter Analyze
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.3'
 
       - name: Install dependencies
         run: flutter pub get
@@ -44,10 +44,83 @@ jobs:
         run: flutter analyze --no-pub || echo "⚠️ Analysis warnings ignored"
         working-directory: ./buildtrack_app
 
+  test:
+    name: Flutter Test
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.3'
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: ./buildtrack_app
+
       - name: Run tests
         run: flutter test
+        working-directory: ./buildtrack_app
+
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    needs: [analyze, test]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.3'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create debug keystore
+        run: |
+          cd android
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          echo "✅ Keystore créé"
+          ls -la debug.keystore
+        working-directory: ./buildtrack_app
+
+      - name: Install dependencies
+        run: flutter pub get
         working-directory: ./buildtrack_app
 
       - name: Build APK
         run: flutter build apk --debug
         working-directory: ./buildtrack_app
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: buildtrack_app/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 1
+
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    needs: [analyze, test, build]
+    if: always()
+    steps:
+      - name: Verify all quality checks
+        run: |
+          if [[ "${{ needs.analyze.result }}" == "success" && 
+                "${{ needs.test.result }}" == "success" && 
+                "${{ needs.build.result }}" == "success" ]]; then
+            echo "✅ All quality checks passed successfully"
+            exit 0
+          else
+            echo "❌ Some quality checks failed"
+            echo "Analyze: ${{ needs.analyze.result }}"
+            echo "Test: ${{ needs.test.result }}"
+            echo "Build: ${{ needs.build.result }}"
+            exit 1
+          fi
