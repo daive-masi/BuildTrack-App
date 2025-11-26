@@ -19,13 +19,6 @@ jobs:
         with:
           flutter-version: '3.27.3'
 
-      - name: Create debug keystore
-        run: |
-          cd android
-          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          echo "✅ Keystore créé"
-        working-directory: ./buildtrack_app
-
       - name: Install dependencies
         run: flutter pub get
         working-directory: ./buildtrack_app
@@ -85,6 +78,17 @@ jobs:
         with:
           flutter-version: '3.27.3'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create debug keystore
+        run: |
+          cd android
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          echo "✅ Keystore créé"
+          ls -la debug.keystore
+        working-directory: ./buildtrack_app
+
       - name: Install dependencies
         run: flutter pub get
         working-directory: ./buildtrack_app
@@ -103,7 +107,7 @@ jobs:
   quality-checks:
     name: Quality Checks
     runs-on: ubuntu-latest
-    needs: [analyze, test, build]  # Dépend des 3 jobs principaux
+    needs: [analyze, test, build]
     if: always()
     steps:
       - name: Verify all quality checks
