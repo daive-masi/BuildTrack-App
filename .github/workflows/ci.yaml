@@ -15,32 +15,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Flutter with cache
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.27.3'
-          cache: true
-          cache-key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
-          cache-path: buildtrack_app/.dart_tool
+      - name: Install Flutter manually
+        run: |
+          # Solution la plus fiable
+          git clone https://github.com/flutter/flutter.git -b stable --depth 1 ./flutter
+          echo "${GITHUB_WORKSPACE}/flutter/bin" >> $GITHUB_PATH
+          flutter precache
+          flutter --version
+        working-directory: ./
+
+      - name: Setup Android SDK
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platforms;android-33" "build-tools;33.0.1"
 
       - name: Create debug keystore
         run: |
-          cd android
+          cd buildtrack_app/android
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-        working-directory: ./buildtrack_app
 
       - name: Install dependencies
-        run: flutter pub get
-        working-directory: ./buildtrack_app
+        run: |
+          cd buildtrack_app
+          flutter pub get
 
-      - name: Quick analyze
-        run: flutter analyze --no-pub --no-fatal-infos || true
-        working-directory: ./buildtrack_app
+      - name: Analyze
+        run: |
+          cd buildtrack_app
+          flutter analyze --no-pub || echo "⚠️ Analysis warnings"
 
       - name: Run tests
-        run: flutter test
-        working-directory: ./buildtrack_app
+        run: |
+          cd buildtrack_app
+          flutter test
 
-      - name: Fast build
-        run: flutter build apk --debug --no-android-gradle-daemon
-        working-directory: ./buildtrack_app
+      - name: Build APK
+        run: |
+          cd buildtrack_app
+          flutter build apk --debug
