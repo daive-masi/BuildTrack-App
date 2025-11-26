@@ -20,11 +20,20 @@ jobs:
         with:
           flutter-version: '3.27.3'
 
-      - name: Create debug keystore
+      - name: Create debug keystore (correct path)
         run: |
-          mkdir -p android/app
-          cd android/app
+          # Créer le keystore exactement où Gradle le cherche
+          cd android
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          echo "✅ Keystore créé à : $(pwd)/debug.keystore"
+          ls -la debug.keystore
+        working-directory: ./buildtrack_app
+
+      - name: Verify keystore location
+        run: |
+          echo "🔍 Vérification du keystore..."
+          ls -la android/debug.keystore || echo "❌ Keystore non trouvé dans android/"
+          find . -name "debug.keystore" || echo "❌ Aucun keystore trouvé"
         working-directory: ./buildtrack_app
 
       - name: Install dependencies
