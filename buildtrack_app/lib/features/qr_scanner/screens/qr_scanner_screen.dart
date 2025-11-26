@@ -1,5 +1,6 @@
 // features/qr_scanner/screens/qr_scanner_screen.dart
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../core/services/qr_service.dart';
