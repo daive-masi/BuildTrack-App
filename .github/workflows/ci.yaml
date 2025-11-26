@@ -20,14 +20,19 @@ jobs:
         with:
           flutter-version: '3.27.3'
 
+      - name: Create debug keystore
+        run: |
+          mkdir -p android/app
+          cd android/app
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+        working-directory: ./buildtrack_app
+
       - name: Install dependencies
         run: flutter pub get
         working-directory: ./buildtrack_app
 
-      - name: Analyze (ignore warnings)
-        run: |
-          # Analyse mais ne fail pas sur les warnings
-          flutter analyze --no-pub || echo "⚠️  Analysis completed with warnings"
+      - name: Analyze
+        run: flutter analyze --no-pub || echo "⚠️ Analysis warnings ignored"
         working-directory: ./buildtrack_app
 
       - name: Run tests
