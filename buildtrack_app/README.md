@@ -13,7 +13,7 @@
 
 ## 🎯 Présentation du Projet
 
-BuildTrack est une application mobile développée en **Flutter** permettant aux entreprises de construction de suivre en temps réel l'avancement des chantiers, la présence des employés et l'état des tâches.
+BuildTrack est une application mobile développée en **Flutter** permettant aux entreprises de construction de suivre en temps réel l'avancement des chantiers, la présence des employés et l'état des tâches en temps reel.
 
 ### 📱 Fonctionnalités Principales
 
