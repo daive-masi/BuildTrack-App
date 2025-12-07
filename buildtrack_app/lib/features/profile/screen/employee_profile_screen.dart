@@ -1,10 +1,9 @@
-// features/profile/screens/employee_profile_screen.dart
+// lib/features/profile/screens/employee_profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/attendance_service.dart';
-import '../../../core/services/storage_service.dart';
 import '../../../models/attendance_model.dart';
 import '../../../models/user_model.dart';
 
@@ -75,8 +74,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mon Profil'),
-        backgroundColor: Colors.blue[700],
-        foregroundColor: Colors.white,
+        // Le style est géré par le thème global, mais on garde tes actions d'origine
         actions: [
           if (!_isEditing)
             IconButton(
@@ -93,23 +91,43 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Photo de profil et informations principales
+            // 1. Photo de profil et informations principales (RESTAURÉ)
             _buildProfileHeader(context, authService, employeeId),
 
             const SizedBox(height: 24),
 
-            // Statistiques de travail
+            // 2. Statistiques de travail (RESTAURÉ)
             _buildWorkStats(context, attendanceService, employeeId),
 
             const SizedBox(height: 24),
 
-            // Informations personnelles
+            // 3. Informations personnelles (RESTAURÉ)
             _buildPersonalInfo(context),
+
+            const SizedBox(height: 40),
+
+            // 4. Bouton Déconnexion (NOUVEAU - EN BAS)
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: OutlinedButton.icon(
+                onPressed: () => _showLogoutDialog(context, authService),
+                icon: const Icon(Icons.logout, color: Colors.red),
+                label: const Text('Se déconnecter', style: TextStyle(color: Colors.red, fontSize: 16)),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.red),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
+
+  // --- WIDGETS D'ORIGINE RESTAURÉS ---
 
   Widget _buildProfileHeader(BuildContext context, AuthService authService, String employeeId) {
     return FutureBuilder<Employee?>(
@@ -219,8 +237,6 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
                 final stats = snapshot.data ?? {};
                 final totalHours = stats['totalHours'] ?? 0;
                 final weekHours = stats['currentWeekHours'] ?? 0;
-                final monthHours = stats['currentMonthHours'] ?? 0;
-                final totalAttendances = stats['totalAttendances'] ?? 0;
                 final avgHours = stats['averageHoursPerDay'] ?? 0;
 
                 return Row(
@@ -241,7 +257,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
               builder: (context, snapshot) {
                 final attendances = snapshot.data ?? [];
                 final currentMonthAttendances = attendances.where((a) {
-                  return a?.checkInTime.month == DateTime.now().month;
+                  return a.checkInTime.month == DateTime.now().month;
                 }).length;
 
                 return Row(
@@ -260,9 +276,10 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
   }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
+    // J'utilise Theme.of(context).primaryColor pour garder ton bleu nuit si le thème est appliqué
     return Column(
       children: [
-        Icon(icon, size: 30, color: Colors.blue),
+        Icon(icon, size: 30, color: Theme.of(context).primaryColor),
         const SizedBox(height: 8),
         Text(
           value,
@@ -405,5 +422,30 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
         );
       }
     }
+  }
+
+  // Fonction pour afficher la boîte de dialogue de déconnexion
+  void _showLogoutDialog(BuildContext context, AuthService authService) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Déconnexion'),
+        content: const Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Fermer le dialogue
+              Navigator.pop(context); // Revenir à l'écran précédent (Dashboard) si nécessaire
+              await authService.signOut();
+            },
+            child: const Text('Déconnexion', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 }

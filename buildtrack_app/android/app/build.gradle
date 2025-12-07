@@ -47,6 +47,7 @@ android {
     ndkVersion flutter.ndkVersion
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -59,7 +60,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.buildtrack_app"
         // CHANGEMENT ICI : Augmentez le minSdkVersion de 21 à 23
-        minSdkVersion 23  // ← CHANGEZ CETTE LIGNE
+        minSdkVersion flutter.minSdkVersion  // ← CHANGEZ CETTE LIGNE
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -93,4 +94,5 @@ flutter {
 dependencies {
     // Ajoutez cette dépendance si elle n'existe pas déjà
     implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 }

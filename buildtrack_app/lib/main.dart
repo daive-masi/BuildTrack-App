@@ -11,14 +11,16 @@ import 'core/services/storage_service.dart';
 import 'core/services/task_service.dart';
 import 'core/services/attendance_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/project_service.dart'; // 🆕 Import du service projet
 import 'core/auth_wrapper.dart';
 
-/// 🔔 Gestion des messages quand l'app est fermée
+// 🎨 LE BLEU NUIT DE TON IMAGE
+const Color kMidnightBlue = Color(0xFF0B2545);
+const Color kLightBackground = Color(0xFFF8F9FB);
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  // Tu peux ajouter un print ici pour tester :
-  print('Message reçu en background: ${message.notification?.title}');
 }
 
 void main() async {
@@ -26,7 +28,6 @@ void main() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // Initialisation notifications locales
   final notificationService = NotificationService();
   await notificationService.initNotifications();
 
@@ -44,18 +45,64 @@ class BuildTrackApp extends StatelessWidget {
         ChangeNotifierProvider<QrService>(create: (_) => QrService()),
         ChangeNotifierProvider<TaskService>(create: (_) => TaskService()),
         ChangeNotifierProvider<AttendanceService>(create: (_) => AttendanceService()),
+        // ⭐ AJOUT DU PROJECT SERVICE ICI
+        ChangeNotifierProvider<ProjectService>(create: (_) => ProjectService()),
         Provider<StorageService>(create: (_) => StorageService()),
         Provider<NotificationService>(create: (_) => NotificationService()),
       ],
       child: MaterialApp(
         title: 'BuildTrack',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
           useMaterial3: true,
           fontFamily: 'Roboto',
+          scaffoldBackgroundColor: kLightBackground,
+
+          primaryColor: kMidnightBlue,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: kMidnightBlue,
+            primary: kMidnightBlue,
+            surface: Colors.white,
+          ),
+
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.transparent,
+            foregroundColor: kMidnightBlue,
+            elevation: 0,
+            centerTitle: true,
+            titleTextStyle: TextStyle(
+              color: kMidnightBlue,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Roboto',
+            ),
+          ),
+
+          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+            backgroundColor: kMidnightBlue,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white54,
+            type: BottomNavigationBarType.fixed,
+            elevation: 10,
+          ),
+
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kMidnightBlue,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            ),
+          ),
+
+          floatingActionButtonTheme: const FloatingActionButtonThemeData(
+            backgroundColor: kMidnightBlue,
+            foregroundColor: Colors.white,
+          ),
         ),
         home: const AuthWrapper(),
-        debugShowCheckedModeBanner: false,
       ),
     );
   }

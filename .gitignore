@@ -1,0 +1,11 @@
+# IntelliJ/Android Studio IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VSCode
+.vscode/
+
+# Mac
+.DS_Store

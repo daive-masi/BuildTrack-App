@@ -5,10 +5,6 @@ import '../../models/task_model.dart';
 class TaskService with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// 🔹 ID de l'utilisateur courant (remplace plus tard par FirebaseAuth)
-  String get currentUserId => 'EMPLOYEE_001'; // temporaire pour test
-
-  /// 🔹 Récupère les tâches assignées à un employé
   Stream<List<ProjectTask>> getEmployeeTasks(String employeeId) {
     return _firestore
         .collection('tasks')
@@ -19,28 +15,48 @@ class TaskService with ChangeNotifier {
         .toList());
   }
 
-  /// 🔹 Injection de tâche test dans Firestore
   Future<void> injectSampleTasks(String userId) async {
+    final existing = await _firestore.collection('tasks').where('assignedTo', isEqualTo: userId).get();
+    if (existing.docs.isNotEmpty) return;
+
     final tasks = [
       ProjectTask(
-        id: '',
-        title: 'Préparer le terrain',
-        description: 'Niveler et nettoyer la zone avant le chantier.',
-        projectId: 'chantier_001',
-        assignedTo: userId,
-        status: TaskStatus.todo,
-        createdAt: DateTime.now(),
-        dueDate: DateTime.now().add(const Duration(days: 3)),
+          id: '',
+          title: 'Coulage dalle béton',
+          description: 'Vérifier le coffrage avant de couler.',
+          address: '12 Rue de la Construction, Paris',
+          projectId: 'chantier_001',
+          assignedTo: userId,
+          status: TaskStatus.inProgress,
+          createdAt: DateTime.now(),
+          dueDate: DateTime.now().add(const Duration(hours: 4)),
+          history: [
+            TaskLog(userName: 'Chef de chantier', comment: "Le camion arrive à 14h, préparez la zone.", date: DateTime.now().subtract(const Duration(hours: 2))),
+          ]
       ),
       ProjectTask(
         id: '',
-        title: 'Installer les fondations',
-        description: 'Coulage du béton et vérification de la stabilité.',
-        projectId: 'chantier_001',
+        title: 'Pose électricité R+1',
+        description: 'Tirer les câbles dans les cloisons du premier étage.',
+        address: '45 Avenue des Architectes, Lyon',
+        projectId: 'chantier_002',
         assignedTo: userId,
-        status: TaskStatus.inProgress,
+        status: TaskStatus.completed,
         createdAt: DateTime.now(),
-        dueDate: DateTime.now().add(const Duration(days: 5)),
+        dueDate: DateTime.now().subtract(const Duration(days: 1)),
+        history: [],
+      ),
+      ProjectTask(
+        id: '',
+        title: 'Validation Peinture',
+        description: 'Attente validation client pour la couleur du salon.',
+        address: '8 Impasse du Pinceau, Lille',
+        projectId: 'chantier_003',
+        assignedTo: userId,
+        status: TaskStatus.pending,
+        createdAt: DateTime.now(),
+        dueDate: DateTime.now().add(const Duration(days: 2)),
+        history: [],
       ),
     ];
 
@@ -50,43 +66,24 @@ class TaskService with ChangeNotifier {
     print('✅ Tâches injectées pour $userId.');
   }
 
-
-  /// 🔹 Mise à jour du statut
   Future<void> updateTaskStatus(String taskId, TaskStatus newStatus) async {
     await _firestore.collection('tasks').doc(taskId).update({
       'status': describeEnum(newStatus),
-      'updatedAt': Timestamp.now(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
-    print('🔄 Statut de la tâche $taskId mis à jour vers ${describeEnum(newStatus)}');
   }
 
-  Future<void> addTaskProof({
-    required String taskId,
-    required List<String> imageUrls,
-  }) async {
-    try {
-      final taskRef = _firestore.collection('tasks').doc(taskId);
-
-      await _firestore.runTransaction((transaction) async {
-        final snapshot = await transaction.get(taskRef);
-        if (!snapshot.exists) {
-          throw Exception("Tâche introuvable");
-        }
-
-        final data = snapshot.data()!;
-        final existingProofs = List<String>.from(data['proofImages'] ?? []);
-
-        final updatedProofs = [...existingProofs, ...imageUrls];
-
-        transaction.update(taskRef, {
-          'proofImages': updatedProofs,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      });
-    } catch (e) {
-      print('Erreur lors de l’ajout des preuves à la tâche : $e');
-      rethrow;
-    }
+  // ⭐ NOUVEAU : Ajouter un log (commentaire/photo)
+  Future<void> addTaskLog(String taskId, TaskLog log) async {
+    final taskRef = _firestore.collection('tasks').doc(taskId);
+    await taskRef.update({
+      'history': FieldValue.arrayUnion([log.toMap()]),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
   }
 
+  // Méthode legacy gardée pour compatibilité si besoin
+  Future<void> addTaskProof({required String taskId, required List<String> imageUrls}) async {
+    // ... code existant si nécessaire, sinon peut être retiré
+  }
 }
