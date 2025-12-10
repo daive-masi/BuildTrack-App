@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.buildtrack_app">
 
-    <!-- Permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -11,7 +10,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Feature pour la caméra (optionnel mais recommandé) -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -43,7 +41,6 @@
             </intent-filter>
         </activity>
 
-        <!-- FileProvider UNIQUE et consolidé -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -56,39 +53,30 @@
                 tools:replace="android:resource" />
         </provider>
 
-        <!-- SUPPRIMEZ ces providers dupliqués -->
-        <!--
-        <provider
-            android:name="com.pichillilorenzo.flutter_inappwebview.InAppWebViewFileProvider"
-            android:authorities="${applicationId}.flutter_inappwebview.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
-        <provider
-            android:name="io.flutter.plugins.imagepicker.ImagePickerFileProvider"
-            android:authorities="${applicationId}.flutter.image_provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-        -->
-
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
 
-    <!-- Required to query activities that can process text -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
         </intent>
     </queries>
 </manifest>
