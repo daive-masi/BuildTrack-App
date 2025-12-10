@@ -3,7 +3,13 @@ import 'package:flutter/foundation.dart';
 import '../../models/task_model.dart';
 
 class TaskService with ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // 1. Change this to be a non-final variable.
+  late final FirebaseFirestore _firestore;
+
+  // 2. Add a constructor to initialize _firestore.
+  //    If no firestore instance is given, it defaults to the real one.
+  TaskService({FirebaseFirestore? firestore})
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// 🔹 ID de l'utilisateur courant (remplace plus tard par FirebaseAuth)
   String get currentUserId => 'EMPLOYEE_001'; // temporaire pour test
@@ -17,6 +23,26 @@ class TaskService with ChangeNotifier {
         .map((snapshot) => snapshot.docs
         .map((doc) => ProjectTask.fromFirestore(doc.data(), doc.id))
         .toList());
+  }
+  /// 🔹 Crée une nouvelle tâche
+  Future<DocumentReference> createTask({
+    required String title,
+    required String description,
+    required String assignedTo,
+    required DateTime dueDate,
+    String projectId = 'chantier_001',
+  }) async {
+    final task = ProjectTask(
+      id: '', // Firestore will generate it
+      title: title,
+      description: description,
+      projectId: projectId,
+      assignedTo: assignedTo,
+      status: TaskStatus.todo,
+      createdAt: DateTime.now(),
+      dueDate: dueDate,
+    );
+    return await _firestore.collection('tasks').add(task.toFirestore());
   }
 
   /// 🔹 Injection de tâche test dans Firestore
@@ -47,17 +73,17 @@ class TaskService with ChangeNotifier {
     for (final t in tasks) {
       await _firestore.collection('tasks').add(t.toFirestore());
     }
-    print('✅ Tâches injectées pour $userId.');
+    debugPrint('✅ Tâches injectées pour $userId.');
   }
 
 
   /// 🔹 Mise à jour du statut
   Future<void> updateTaskStatus(String taskId, TaskStatus newStatus) async {
     await _firestore.collection('tasks').doc(taskId).update({
-      'status': describeEnum(newStatus),
+      'status': newStatus.name,
       'updatedAt': Timestamp.now(),
     });
-    print('🔄 Statut de la tâche $taskId mis à jour vers ${describeEnum(newStatus)}');
+    debugPrint('🔄 Statut de la tâche $taskId mis à jour vers ${newStatus.name}');
   }
 
   Future<void> addTaskProof({
@@ -84,7 +110,7 @@ class TaskService with ChangeNotifier {
         });
       });
     } catch (e) {
-      print('Erreur lors de l’ajout des preuves à la tâche : $e');
+      debugPrint('Erreur lors de l’ajout des preuves à la tâche : $e');
       rethrow;
     }
   }

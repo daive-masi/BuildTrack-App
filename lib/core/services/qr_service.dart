@@ -10,7 +10,7 @@ class QrService with ChangeNotifier {
   // Scanner un QR code et récupérer le projet
   Future<Project?> scanQrCode(String qrData) async {
     try {
-      print('🔍 Scan QR code: $qrData');
+      debugPrint('🔍 Scan QR code: $qrData');
       final querySnapshot = await _firestore
           .collection('projects')
           .where('qrCode', isEqualTo: qrData)
@@ -18,15 +18,15 @@ class QrService with ChangeNotifier {
           .limit(1)
           .get();
       if (querySnapshot.docs.isEmpty) {
-        print('❌ Aucun projet trouvé pour ce QR code');
+        debugPrint('❌ Aucun projet trouvé pour ce QR code');
         return null;
       }
       final doc = querySnapshot.docs.first;
       final project = Project.fromFirestore(doc.data());
-      print('✅ Projet trouvé: ${project.name}');
+      debugPrint('✅ Projet trouvé: ${project.name}');
       return project;
     } catch (e) {
-      print('❌ Erreur scan QR: $e');
+      debugPrint('❌ Erreur scan QR: $e');
       throw 'Erreur lors du scan du QR code';
     }
   }
@@ -39,7 +39,7 @@ class QrService with ChangeNotifier {
     required GeoPoint location,
   }) async {
     try {
-      print('📍 Pointage employé $employeeId sur projet $projectId');
+      debugPrint('📍 Pointage employé $employeeId sur projet $projectId');
       final activeAttendance = await _getActiveAttendance(employeeId);
       if (activeAttendance != null) {
         throw 'Vous êtes déjà pointé sur le chantier: ${activeAttendance.projectName}';
@@ -56,11 +56,11 @@ class QrService with ChangeNotifier {
           .collection('attendances')
           .doc(attendance.id)
           .set(attendance.toFirestore());
-      print('✅ Pointage réussi: ${attendance.id}');
+      debugPrint('✅ Pointage réussi: ${attendance.id}');
       notifyListeners(); // ⭐ Notifie les écouteurs après un pointage réussi
       return attendance;
     } catch (e) {
-      print('❌ Erreur pointage: $e');
+      debugPrint('❌ Erreur pointage: $e');
       rethrow;
     }
   }
@@ -68,7 +68,7 @@ class QrService with ChangeNotifier {
   // Pointage de sortie
   Future<void> checkOutFromProject(String employeeId) async {
     try {
-      print('🚪 Pointage de sortie pour: $employeeId');
+      debugPrint('🚪 Pointage de sortie pour: $employeeId');
       final activeAttendance = await _getActiveAttendance(employeeId);
       if (activeAttendance == null) {
         throw 'Aucun pointage actif trouvé';
@@ -79,10 +79,10 @@ class QrService with ChangeNotifier {
           .update({
         'checkOutTime': Timestamp.fromDate(DateTime.now()),
       });
-      print('✅ Pointage de sortie réussi');
+      debugPrint('✅ Pointage de sortie réussi');
       notifyListeners(); // ⭐ Notifie les écouteurs après un pointage de sortie réussi
     } catch (e) {
-      print('❌ Erreur pointage sortie: $e');
+      debugPrint('❌ Erreur pointage sortie: $e');
       rethrow;
     }
   }
