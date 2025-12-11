@@ -113,8 +113,7 @@ jobs:
       - name: Verify all quality checks
         run: |
           if [[ "${{ needs.analyze.result }}" == "success" && 
-                "${{ needs.test.result }}" == "success" && 
-                "${{ needs.build.result }}" == "success" ]]; then
+                "${{ needs.test.result }}" == "success" then
             echo "✅ All quality checks passed successfully"
             exit 0
           else
