@@ -31,7 +31,7 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
+build/
 
 # Symbolication related
 app.*.symbols
@@ -40,9 +40,9 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+android/app/debug/
+android/app/profile/
+android/app/release/
 
 # Flutter
 .dart_tool/
@@ -54,9 +54,9 @@ build/
 # Android
 android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
 android/app/src/main/kotlin/io/flutter/plugins/GeneratedPluginRegistrant.kt
-/android/app/build/
-/android/build/
-/android/.gradle/
+android/build/
+android/.gradle/
+android/app/build/
 local.properties
 
 # iOS
