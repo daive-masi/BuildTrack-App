@@ -15,6 +15,7 @@ class AppConfig {
     required this.enableLogs,
   });
 
+
   factory AppConfig.dev() => AppConfig(
     flavor: FlavorConfig.dev,
     appName: 'BuildTrack Dev',
