@@ -24,6 +24,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
+
 // --- CLASSE POUR GÉRER LA LANGUE ---
 class LanguageProvider with ChangeNotifier {
   Locale _currentLocale = const Locale('fr', 'FR');
