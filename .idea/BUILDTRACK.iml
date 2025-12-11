@@ -21,6 +21,9 @@
       <excludeFolder url="file://$MODULE_DIR$/buildtrack_app/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/buildtrack_app/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/buildtrack_app/windows/flutter/ephemeral/.plugin_symlinks/firebase_core/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/buildtrack_app/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/buildtrack_app/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/buildtrack_app/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
