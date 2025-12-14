@@ -106,10 +106,20 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Install jsonlint
+        run: sudo npm install -g jsonlint
+
       - name: Create google-services.json for dev
         run: |
           mkdir -p android/app/src/dev
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > android/app/src/dev/google-services.json
+
+      - name: Debug google-services.json for dev
+        run: cat android/app/src/dev/google-services.json
+
+      - name: Validate google-services.json for dev
+        run: |
+          jsonlint -q android/app/src/dev/google-services.json || { echo "Erreur: Le fichier google-services.json n'est pas valide"; cat android/app/src/dev/google-services.json; exit 1; }
 
       - name: Create debug keystore
         run: |
