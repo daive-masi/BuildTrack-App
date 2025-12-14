@@ -1,4 +1,4 @@
-// core/services/auth_service.dart
+// lib/core/services/auth_service.dart
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -6,15 +6,40 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/user_model.dart';
 
 class AuthService with ChangeNotifier {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn.standard();
+  FirebaseAuth _auth;
+  FirebaseFirestore _firestore;
+  GoogleSignIn _googleSignIn;
+
+  // Constructeur principal
+  AuthService({
+    FirebaseAuth? auth,
+    FirebaseFirestore? firestore,
+    GoogleSignIn? googleSignIn,
+  })  : _auth = auth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn.standard();
+
+  // Setters pour les tests
+  @visibleForTesting
+  set setFirebaseAuth(FirebaseAuth auth) {
+    _auth = auth;
+  }
+
+  @visibleForTesting
+  set setFirestore(FirebaseFirestore firestore) {
+    _firestore = firestore;
+  }
+
+  @visibleForTesting
+  set setGoogleSignIn(GoogleSignIn googleSignIn) {
+    _googleSignIn = googleSignIn;
+  }
 
   User? get currentUser => _auth.currentUser;
 
   // --- Connexion avec email/mot de passe ---
   Future<Employee?> signInWithEmail(String email, String password) async {
-    print('🔐 Tentative de connexion avec email: $email');
+    debugPrint('🔐 Tentative de connexion avec email: $email');
     try {
       UserCredential credential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -23,48 +48,44 @@ class AuthService with ChangeNotifier {
       if (credential.user == null) {
         throw Exception('Aucun utilisateur retourné par Firebase');
       }
-      print('✅ Connexion réussie pour: ${credential.user!.uid}');
-      notifyListeners(); // ⭐ Notifie les écouteurs après connexion
+      debugPrint('✅ Connexion réussie pour: ${credential.user!.uid}');
+      notifyListeners();
       return await _getOrCreateEmployee(credential.user!);
     } catch (e) {
-      print('❌ Erreur connexion email: $e');
+      debugPrint('❌ Erreur connexion email: $e');
       throw _handleAuthError(e);
     }
   }
 
-  // --- Connexion avec Google (version ultra-robuste) ---
+  // --- Connexion avec Google ---
   Future<Employee?> signInWithGoogle() async {
-    print('🔗 Début de la connexion Google');
+    debugPrint('🔗 Début de la connexion Google');
     try {
-      // Étape 1: Connexion Google
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         throw Exception('Connexion Google annulée par l\'utilisateur');
       }
-      print('✅ Google Sign-In réussi: ${googleUser.email}');
-      // Étape 2: Authentification
+      debugPrint('✅ Google Sign-In réussi: ${googleUser.email}');
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       if (googleAuth.accessToken == null && googleAuth.idToken == null) {
         throw Exception('Tokens d\'authentification manquants');
       }
-      // Étape 3: Création credentials Firebase
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      // Étape 4: Connexion Firebase
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
       if (userCredential.user == null) {
         throw Exception('Aucun utilisateur Firebase retourné');
       }
-      print('✅ Connexion Firebase réussie: ${userCredential.user!.uid}');
-      notifyListeners(); // ⭐ Notifie les écouteurs après connexion
+      debugPrint('✅ Connexion Firebase réussie: ${userCredential.user!.uid}');
+      notifyListeners();
       return await _getOrCreateEmployee(userCredential.user!);
     } on FirebaseAuthException catch (e) {
-      print('❌ Erreur Firebase Auth: ${e.code} - ${e.message}');
+      debugPrint('❌ Erreur Firebase Auth: ${e.code} - ${e.message}');
       throw _handleAuthError(e);
     } catch (e) {
-      print('❌ Erreur connexion Google: $e');
+      debugPrint('❌ Erreur connexion Google: $e');
       throw _handleAuthError(e);
     }
   }
@@ -77,7 +98,7 @@ class AuthService with ChangeNotifier {
     required String lastName,
     required String phone,
   }) async {
-    print('📝 Inscription d\'un nouvel employé: $email');
+    debugPrint('📝 Inscription d\'un nouvel employé: $email');
     try {
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -95,30 +116,31 @@ class AuthService with ChangeNotifier {
       await _firestore.collection('employees').doc(employee.id).set(
         employee.toFirestore(),
       );
-      print('✅ Employé inscrit et enregistré dans Firestore: ${employee.id}');
-      notifyListeners(); // ⭐ Notifie les écouteurs après inscription
+      debugPrint('✅ Employé inscrit et enregistré dans Firestore: ${employee.id}');
+      notifyListeners();
       return employee;
     } catch (e) {
-      print('❌ Erreur inscription employé: $e');
+      debugPrint('❌ Erreur inscription employé: $e');
       throw _handleAuthError(e);
     }
   }
 
   // --- Récupérer ou créer l'employé ---
   Future<Employee> _getOrCreateEmployee(User user) async {
-    print('🔄 Récupération/création employé pour: ${user.uid}');
+    debugPrint('🔄 Récupération/création employé pour: ${user.uid}');
     try {
       final doc = await _firestore.collection('employees').doc(user.uid).get();
       if (doc.exists) {
-        print('✅ Employé trouvé dans Firestore');
-        return Employee.fromFirestore(doc.data()!);
+        debugPrint('✅ Employé trouvé dans Firestore');
+        final data = doc.data()!;
+        return Employee.fromFirestore(data);
       } else {
-        print('🆕 Création nouvel employé depuis ${user.providerData.first.providerId}');
-        final names = user.displayName?.split(' ') ?? ['Employé', ''];
+        debugPrint('🆕 Création nouvel employé depuis ${user.providerData.first.providerId}');
+        final names = user.displayName?.split(' ') ?? ['Employé'];
         final employee = Employee(
           id: user.uid,
-          email: user.email!,
-          firstName: names.first,
+          email: user.email ?? '',
+          firstName: names.isNotEmpty ? names.first : 'Employé',
           lastName: names.length > 1 ? names.sublist(1).join(' ') : '',
           phone: user.phoneNumber ?? '',
           role: UserRole.employee,
@@ -128,49 +150,54 @@ class AuthService with ChangeNotifier {
         await _firestore.collection('employees').doc(employee.id).set(
           employee.toFirestore(),
         );
-        print('✅ Nouvel employé créé dans Firestore: ${employee.id}');
+        debugPrint('✅ Nouvel employé créé dans Firestore: ${employee.id}');
         return employee;
       }
     } catch (e) {
-      print('❌ Erreur dans _getOrCreateEmployee: $e');
-      throw 'Erreur lors de la récupération/création du profil';
+      debugPrint('❌ Erreur dans _getOrCreateEmployee: $e');
+      throw Exception('Erreur lors de la récupération/création du profil: $e');
     }
   }
 
   // --- Déconnexion ---
   Future<void> signOut() async {
-    print('🚪 Déconnexion en cours...');
+    debugPrint('🚪 Déconnexion en cours...');
     try {
       await _googleSignIn.signOut();
       await _auth.signOut();
-      notifyListeners(); // ⭐ Notifie les écouteurs après déconnexion
-      print('✅ Déconnexion réussie');
+      notifyListeners();
+      debugPrint('✅ Déconnexion réussie');
     } catch (e) {
-      print('❌ Erreur déconnexion: $e');
-      throw 'Erreur lors de la déconnexion';
+      debugPrint('❌ Erreur déconnexion: $e');
+      throw Exception('Erreur lors de la déconnexion: $e');
     }
   }
 
-  // --- Stream utilisateur (version corrigée et robuste) ---
+  // --- Stream utilisateur ---
   Stream<Employee?> get userStream {
     return _auth.authStateChanges().asyncMap((user) async {
       if (user == null) {
-        print('🔄 Utilisateur déconnecté');
+        debugPrint('🔄 Utilisateur déconnecté');
         return null;
       }
       try {
-        print('🔄 Récupération données employé pour: ${user.uid}');
+        debugPrint('🔄 Récupération données employé pour: ${user.uid}');
         return await _getOrCreateEmployee(user);
       } catch (e) {
-        print('❌ Erreur dans userStream: $e');
+        debugPrint('❌ Erreur dans userStream: $e');
         return null;
       }
     });
   }
 
-  // --- Gestion des erreurs d'authentification (version enrichie) ---
+  // --- Gestion des erreurs d'authentification ---
+  @visibleForTesting
+  String handleAuthError(dynamic error) {
+    return _handleAuthError(error);
+  }
+
   String _handleAuthError(dynamic error) {
-    print('🔐 Erreur auth: $error');
+    debugPrint('🔐 Erreur auth: $error');
     if (error is FirebaseAuthException) {
       switch (error.code) {
         case 'user-not-found':
@@ -199,15 +226,16 @@ class AuthService with ChangeNotifier {
     return 'Une erreur inattendue s\'est produite. Veuillez réessayer.';
   }
 
-  // --- Méthode utilitaire: Récupérer l'utilisateur actuel (sans Firestore) ---
+  // --- Méthode utilitaire: Récupérer l'utilisateur actuel ---
   Employee? getCurrentUser() {
     final user = _auth.currentUser;
     if (user == null) return null;
+    final names = user.displayName?.split(' ') ?? ['Employé'];
     return Employee(
       id: user.uid,
       email: user.email ?? '',
-      firstName: user.displayName?.split(' ').first ?? 'Employé',
-      lastName: user.displayName?.split(' ').last ?? '',
+      firstName: names.isNotEmpty ? names.first : 'Employé',
+      lastName: names.length > 1 ? names.sublist(1).join(' ') : '',
       phone: user.phoneNumber ?? '',
       role: UserRole.employee,
       createdAt: DateTime.now(),
@@ -220,7 +248,7 @@ class AuthService with ChangeNotifier {
     return _auth.currentUser != null;
   }
 
-  // Dans auth_service.dart - ajoutez ces méthodes
+  // --- Méthode utilitaire: Récupérer les données d'un employé ---
   Future<Employee?> getEmployeeData(String employeeId) async {
     try {
       final doc = await _firestore.collection('employees').doc(employeeId).get();
@@ -229,11 +257,12 @@ class AuthService with ChangeNotifier {
       }
       return null;
     } catch (e) {
-      print('❌ Erreur récupération employé: $e');
+      debugPrint('❌ Erreur récupération employé: $e');
       return null;
     }
   }
 
+  // --- Méthode utilitaire: Mettre à jour le profil d'un employé ---
   Future<void> updateEmployeeProfile({
     required String employeeId,
     required String firstName,
@@ -247,10 +276,10 @@ class AuthService with ChangeNotifier {
         'phone': phone,
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      print('✅ Profil employé mis à jour: $employeeId');
+      debugPrint('✅ Profil employé mis à jour: $employeeId');
     } catch (e) {
-      print('❌ Erreur mise à jour profil: $e');
-      throw 'Erreur lors de la mise à jour du profil';
+      debugPrint('❌ Erreur mise à jour profil: $e');
+      throw Exception('Erreur lors de la mise à jour du profil: $e');
     }
   }
 }

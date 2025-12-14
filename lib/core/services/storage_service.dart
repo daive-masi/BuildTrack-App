@@ -1,4 +1,5 @@
 // core/services/storage_service.dart
+import 'package:flutter/foundation.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
@@ -35,7 +36,7 @@ class StorageService {
       final ref = _storage.refFromURL(url);
       await ref.delete();
     } catch (e) {
-      print('Erreur suppression image: $e');
+      debugPrint('Erreur suppression image: $e');
     }
   }
 }

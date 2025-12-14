@@ -5,6 +5,7 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=3.6.1 <4.0.0'
+  flutter: ">=3.27.0"
 
 dependencies:
   flutter:
@@ -42,6 +43,14 @@ dependencies:
 
   # 📄 STORAGE & UTILS
   shared_preferences: ^2.2.2
+
+  #TESTS
+  mockito: ^5.4.2
+  fake_cloud_firestore: ^2.3.0
+  firebase_storage_mocks: ^0.6.0
+  plugin_platform_interface: any
+  build_runner: ^2.4.6
+  analyzer: ^6.0.0
 
 dev_dependencies:
   flutter_test:

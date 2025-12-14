@@ -14,7 +14,7 @@ class AttendanceService with ChangeNotifier {
     required GeoPoint location,
   }) async {
     try {
-      print('📍 Pointage employé $employeeId sur projet $projectId');
+      debugPrint('📍 Pointage employé $employeeId sur projet $projectId');
       // Vérifier si l'employé est déjà pointé
       final activeAttendance = await _getActiveAttendance(employeeId);
       if (activeAttendance != null) {
@@ -40,11 +40,11 @@ class AttendanceService with ChangeNotifier {
         'currentProjectName': projectName,
         'lastCheckIn': FieldValue.serverTimestamp(),
       });
-      print('✅ Pointage réussi: ${attendance.id}');
+      debugPrint('✅ Pointage réussi: ${attendance.id}');
       notifyListeners(); // ⭐ Notifie les écouteurs après un pointage réussi
       return attendance;
     } catch (e) {
-      print('❌ Erreur pointage: $e');
+      debugPrint('❌ Erreur pointage: $e');
       rethrow;
     }
   }
@@ -52,7 +52,7 @@ class AttendanceService with ChangeNotifier {
   // Pointage de sortie
   Future<Attendance> checkOutFromProject(String employeeId) async {
     try {
-      print('🚪 Pointage de sortie pour: $employeeId');
+      debugPrint('🚪 Pointage de sortie pour: $employeeId');
       final activeAttendance = await _getActiveAttendance(employeeId);
       if (activeAttendance == null) {
         throw 'Aucun pointage actif trouvé';
@@ -73,11 +73,11 @@ class AttendanceService with ChangeNotifier {
       final updatedAttendance = activeAttendance.copyWith(
         checkOutTime: DateTime.now(),
       );
-      print('✅ Pointage de sortie réussi');
-      notifyListeners(); // ⭐ Notifie les écouteurs après un pointage de sortie réussi
+      debugPrint('✅ Pointage de sortie réussi');
+      notifyListeners(); // Notifie les écouteurs après un pointage de sortie réussi
       return updatedAttendance;
     } catch (e) {
-      print('❌ Erreur pointage sortie: $e');
+      debugPrint('❌ Erreur pointage sortie: $e');
       rethrow;
     }
   }
@@ -123,18 +123,18 @@ class AttendanceService with ChangeNotifier {
   // Statistiques de travail
   Stream<Map<String, dynamic>> getWorkStats(String employeeId) {
     return getEmployeeAttendances(employeeId).map((attendances) {
-      final totalHours = attendances.fold<double>(0, (sum, attendance) {
-        return sum + attendance.duration.inHours;
+      final totalHours = attendances.fold<double>(0, (previousValue, attendance) {
+        return previousValue + attendance.duration.inHours;
       });
       final currentWeekHours = attendances.where((a) {
         return a.checkInTime.isAfter(DateTime.now().subtract(const Duration(days: 7)));
-      }).fold<double>(0, (sum, attendance) {
-        return sum + attendance.duration.inHours;
+      }).fold<double>(0, (previousValue, attendance) {
+        return previousValue + attendance.duration.inHours;
       });
       final currentMonthHours = attendances.where((a) {
         return a.checkInTime.isAfter(DateTime.now().subtract(const Duration(days: 30)));
-      }).fold<double>(0, (sum, attendance) {
-        return sum + attendance.duration.inHours;
+      }).fold<double>(0, (previousValue, attendance) {
+        return previousValue + attendance.duration.inHours;
       });
       return {
         'totalHours': totalHours,
