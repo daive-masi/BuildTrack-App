@@ -94,6 +94,7 @@ jobs:
     name: Build APK
     runs-on: ubuntu-latest
     needs: [analyze, test]
+    environment: mysecrets  # Spécifiez l'environnement ici
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -113,9 +114,7 @@ jobs:
         run: |
           mkdir -p android/app/src/dev
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > android/app/src/dev/google-services.json
-
-      - name: Debug google-services.json for dev
-        run: cat android/app/src/dev/google-services.json
+          cat android/app/src/dev/google-services.json
 
       - name: Validate google-services.json for dev
         run: |
