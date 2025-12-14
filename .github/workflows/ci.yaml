@@ -106,24 +106,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Restore dependencies cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.pub-cache
-            .dart_tool
-          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
-
       - name: Create google-services.json for dev
         run: |
           mkdir -p android/app/src/dev
-          echo "${{ secrets.FIREBASE_APP_ID_DEV }}" > android/app/src/dev/google-services.json
-
-      - name: Create firebase service account for dev
-        run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}" > firebase_service_account_dev.json
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > android/app/src/dev/google-services.json
 
       - name: Create debug keystore
         run: |
@@ -132,6 +118,11 @@ jobs:
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           echo "✅ Keystore créé"
           ls -la debug.keystore
+
+      - name: Clean Gradle Cache
+        run: |
+          rm -rf ~/.gradle/caches/
+          rm -rf android/.gradle
 
       - name: Install dependencies
         run: flutter pub get
