@@ -41,22 +41,34 @@ void main() {
       expect(task.formattedDueDate, '10/12/2025');
     });
 
-    test('ProjectTask.isOverdue returns true if task is overdue', () {
-      final overdueTask = ProjectTask(
-        id: '2',
-        title: 'Overdue Task',
-        description: 'Overdue Description',
-        projectId: 'project1',
-        assignedTo: 'emp1',
-        status: TaskStatus.todo,
-        createdAt: now.subtract(const Duration(days: 2)),
-        dueDate: now.subtract(const Duration(days: 1)),
-      );
-      expect(overdueTask.isOverdue, true);
-    });
+test('ProjectTask.isOverdue returns false if task is not overdue', () {
+  final futureDate = DateTime.now().add(Duration(days: 1)); // Demain
+  final task = ProjectTask(
+    id: '1',
+    title: 'Test Task',
+    description: 'Test Description',
+    projectId: 'project1',
+    assignedTo: 'emp1',
+    status: TaskStatus.todo,
+    createdAt: DateTime.now(),
+    dueDate: futureDate, // Date dans le futur
+  );
+  expect(task.isOverdue, false);
+});
 
-    test('ProjectTask.isOverdue returns false if task is not overdue', () {
-      expect(task.isOverdue, false);
-    });
+test('ProjectTask.isOverdue returns true if task is overdue', () {
+  final pastDate = DateTime.now().subtract(Duration(days: 1)); // Hier
+  final task = ProjectTask(
+    id: '2',
+    title: 'Overdue Task',
+    description: 'Overdue Description',
+    projectId: 'project1',
+    assignedTo: 'emp1',
+    status: TaskStatus.todo,
+    createdAt: DateTime.now().subtract(Duration(days: 2)),
+    dueDate: pastDate, // Date dans le passé
+  );
+  expect(task.isOverdue, true);
+});
   });
 }
