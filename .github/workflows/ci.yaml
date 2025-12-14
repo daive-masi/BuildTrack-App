@@ -116,6 +116,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-flutter-
 
+      - name: Create google-services.json for dev
+        run: |
+          mkdir -p android/app/src/dev
+          echo "${{ secrets.FIREBASE_APP_ID_DEV }}" > android/app/src/dev/google-services.json
+
+      - name: Create firebase service account for dev
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}" > firebase_service_account_dev.json
+
       - name: Create debug keystore
         run: |
           mkdir -p android/app
@@ -127,14 +136,14 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK
-        run: flutter build apk --debug
+      - name: Build APK with dev flavor
+        run: flutter build apk --debug --flavor dev --target-platform android-arm64
 
-      - name: Upload APK artifact
+      - name: Upload APK artifact for dev
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: debug-apk-dev
+          path: build/app/outputs/flutter-apk/app-dev-debug.apk
           retention-days: 1
 
   quality-checks:
