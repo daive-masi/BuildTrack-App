@@ -6,6 +6,7 @@ import '../../../core/services/auth_service.dart';
 import '../../../core/services/attendance_service.dart';
 import '../../../models/attendance_model.dart';
 import '../../../models/user_model.dart';
+import '../../../main.dart'; // Pour LanguageProvider
 
 class EmployeeProfileScreen extends StatefulWidget {
   const EmployeeProfileScreen({super.key});
@@ -62,6 +63,9 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
     final attendanceService = Provider.of<AttendanceService>(context);
+    // Récupération du provider de langue
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     final currentUser = authService.currentUser;
     final employeeId = currentUser?.uid;
 
@@ -74,7 +78,6 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mon Profil'),
-        // Le style est géré par le thème global, mais on garde tes actions d'origine
         actions: [
           if (!_isEditing)
             IconButton(
@@ -91,22 +94,60 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // 1. Photo de profil et informations principales (RESTAURÉ)
+            // 1. Photo de profil et informations principales
             _buildProfileHeader(context, authService, employeeId),
 
             const SizedBox(height: 24),
 
-            // 2. Statistiques de travail (RESTAURÉ)
+            // 2. Statistiques de travail
             _buildWorkStats(context, attendanceService, employeeId),
 
             const SizedBox(height: 24),
 
-            // 3. Informations personnelles (RESTAURÉ)
+            // 3. Informations personnelles
             _buildPersonalInfo(context),
+
+            const SizedBox(height: 24),
+
+            // 4. --- NOUVEAU : SÉLECTEUR DE LANGUE ---
+            Card(
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Langue de l\'application', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<Locale>(
+                      value: languageProvider.currentLocale,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.language),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5)
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: Locale('fr', 'FR'), child: Text("Français")),
+                        DropdownMenuItem(value: Locale('en', 'US'), child: Text("English")),
+                        DropdownMenuItem(value: Locale('sq', 'AL'), child: Text("Shqip (Albanais)")),
+                        DropdownMenuItem(value: Locale('sr', 'RS'), child: Text("Српски (Serbe)")),
+                        DropdownMenuItem(value: Locale('ro', 'RO'), child: Text("Română (Roumain)")),
+                        DropdownMenuItem(value: Locale('ro', 'MD'), child: Text("Română (Moldave)")),
+                      ],
+                      onChanged: (Locale? newLocale) {
+                        if (newLocale != null) {
+                          languageProvider.changeLocale(newLocale);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
             const SizedBox(height: 40),
 
-            // 4. Bouton Déconnexion (NOUVEAU - EN BAS)
+            // 5. Bouton Déconnexion
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -127,7 +168,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
     );
   }
 
-  // --- WIDGETS D'ORIGINE RESTAURÉS ---
+  // --- WIDGETS D'ORIGINE ---
 
   Widget _buildProfileHeader(BuildContext context, AuthService authService, String employeeId) {
     return FutureBuilder<Employee?>(
@@ -144,7 +185,6 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // Photo de profil
                 Stack(
                   children: [
                     CircleAvatar(
@@ -174,34 +214,24 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
                       ),
                   ],
                 ),
-
                 const SizedBox(height: 16),
-
                 Text(
                   displayName,
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
-
                 if (employee != null) ...[
                   const SizedBox(height: 8),
                   Text(
                     employee.role == UserRole.employee ? 'Employé' : 'Manager',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                      fontStyle: FontStyle.italic,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600], fontStyle: FontStyle.italic),
                   ),
                 ],
-
                 const SizedBox(height: 8),
-
                 Text(
                   _emailController.text,
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
-
                 if (employee?.createdAt != null) ...[
                   const SizedBox(height: 8),
                   Text(
@@ -225,12 +255,8 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Statistiques de travail',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            const Text('Statistiques de travail', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-
             StreamBuilder<Map<String, dynamic>>(
               stream: attendanceService.getWorkStats(employeeId),
               builder: (context, snapshot) {
@@ -249,9 +275,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
                 );
               },
             ),
-
             const SizedBox(height: 16),
-
             StreamBuilder<List<Attendance>>(
               stream: attendanceService.getEmployeeAttendances(employeeId),
               builder: (context, snapshot) {
@@ -276,21 +300,13 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
   }
 
   Widget _buildStatCard(String title, String value, IconData icon) {
-    // J'utilise Theme.of(context).primaryColor pour garder ton bleu nuit si le thème est appliqué
     return Column(
       children: [
         Icon(icon, size: 30, color: Theme.of(context).primaryColor),
         const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        Text(
-          title,
-          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-          textAlign: TextAlign.center,
-        ),
+        Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600]), textAlign: TextAlign.center),
       ],
     );
   }
@@ -306,10 +322,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Informations personnelles',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                const Text('Informations personnelles', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 if (_isEditing)
                   TextButton(
                     onPressed: _saveProfile,
@@ -317,41 +330,18 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
                   ),
               ],
             ),
-
             const SizedBox(height: 16),
-
             Form(
               key: _formKey,
               child: Column(
                 children: [
-                  _buildEditableField(
-                    'Prénom',
-                    _firstNameController,
-                    Icons.person,
-                    enabled: _isEditing,
-                  ),
+                  _buildEditableField('Prénom', _firstNameController, Icons.person, enabled: _isEditing),
                   const SizedBox(height: 12),
-                  _buildEditableField(
-                    'Nom',
-                    _lastNameController,
-                    Icons.person_outline,
-                    enabled: _isEditing,
-                  ),
+                  _buildEditableField('Nom', _lastNameController, Icons.person_outline, enabled: _isEditing),
                   const SizedBox(height: 12),
-                  _buildEditableField(
-                    'Téléphone',
-                    _phoneController,
-                    Icons.phone,
-                    enabled: _isEditing,
-                    keyboardType: TextInputType.phone,
-                  ),
+                  _buildEditableField('Téléphone', _phoneController, Icons.phone, enabled: _isEditing, keyboardType: TextInputType.phone),
                   const SizedBox(height: 12),
-                  _buildEditableField(
-                    'Email',
-                    _emailController,
-                    Icons.email,
-                    enabled: false, // Email non modifiable
-                  ),
+                  _buildEditableField('Email', _emailController, Icons.email, enabled: false),
                 ],
               ),
             ),
@@ -361,13 +351,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
     );
   }
 
-  Widget _buildEditableField(
-      String label,
-      TextEditingController controller,
-      IconData icon, {
-        bool enabled = true,
-        TextInputType keyboardType = TextInputType.text,
-      }) {
+  Widget _buildEditableField(String label, TextEditingController controller, IconData icon, {bool enabled = true, TextInputType keyboardType = TextInputType.text}) {
     return TextFormField(
       controller: controller,
       enabled: enabled,
@@ -389,10 +373,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
   }
 
   Future<void> _changeProfilePhoto() async {
-    // TODO: Implémenter la sélection de photo
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Fonctionnalité photo à implémenter')),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fonctionnalité photo à implémenter')));
   }
 
   Future<void> _saveProfile() async {
@@ -401,7 +382,6 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
         final authService = context.read<AuthService>();
         final employeeId = authService.currentUser!.uid;
 
-        // Mettre à jour le profil dans Firestore
         await authService.updateEmployeeProfile(
           employeeId: employeeId,
           firstName: _firstNameController.text,
@@ -413,18 +393,13 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
           _isEditing = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profil mis à jour avec succès')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profil mis à jour avec succès')));
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur: $e')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur: $e')));
       }
     }
   }
 
-  // Fonction pour afficher la boîte de dialogue de déconnexion
   void _showLogoutDialog(BuildContext context, AuthService authService) {
     showDialog(
       context: context,
@@ -432,14 +407,11 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
         title: const Text('Déconnexion'),
         content: const Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context); // Fermer le dialogue
-              Navigator.pop(context); // Revenir à l'écran précédent (Dashboard) si nécessaire
+              Navigator.pop(context);
+              Navigator.pop(context);
               await authService.signOut();
             },
             child: const Text('Déconnexion', style: TextStyle(color: Colors.red)),

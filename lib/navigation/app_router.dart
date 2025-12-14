@@ -12,7 +12,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const EmployeeLoginScreen());
       case '/dashboard':
         return MaterialPageRoute(builder: (_) => const EmployeeDashboard());
-      case '/qr-scanner':  // ⭐⭐ AJOUTEZ CETTE ROUTE ⭐⭐
+      case '/qr-scanner':
         return MaterialPageRoute(builder: (_) => const QrScannerScreen());
       default:
         return MaterialPageRoute(

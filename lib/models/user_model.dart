@@ -7,8 +7,10 @@ class Employee {
   final String lastName;
   final String phone;
   final UserRole role;
+  final String jobTitle;
   final DateTime createdAt;
   final String? currentProjectId;
+  final String? currentProjectName; // 🔥 NOUVEAU CHAMP
   final DateTime? lastCheckIn;
   final String? photoUrl;
 
@@ -19,8 +21,10 @@ class Employee {
     required this.lastName,
     required this.phone,
     required this.role,
+    this.jobTitle = "Ouvrier Polyvalent",
     required this.createdAt,
     this.currentProjectId,
+    this.currentProjectName, // 🔥 AJOUTÉ AU CONSTRUCTEUR
     this.lastCheckIn,
     this.photoUrl,
   });
@@ -30,17 +34,19 @@ class Employee {
 
   factory Employee.fromFirestore(Map<String, dynamic> data) {
     return Employee(
-      id: data['id'],
-      email: data['email'],
-      firstName: data['firstName'],
-      lastName: data['lastName'],
-      phone: data['phone'],
+      id: data['id'] ?? '',
+      email: data['email'] ?? '',
+      firstName: data['firstName'] ?? '',
+      lastName: data['lastName'] ?? '',
+      phone: data['phone'] ?? '',
       role: UserRole.values.firstWhere(
-            (e) => e.name == data['role'],
+            (e) => e.name == (data['role'] ?? 'employee'),
         orElse: () => UserRole.employee,
       ),
+      jobTitle: data['jobTitle'] ?? 'Ouvrier Polyvalent',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       currentProjectId: data['currentProjectId'],
+      currentProjectName: data['currentProjectName'], // 🔥 LECTURE
       lastCheckIn: data['lastCheckIn']?.toDate(),
       photoUrl: data['photoUrl'],
     );
@@ -54,8 +60,10 @@ class Employee {
       'lastName': lastName,
       'phone': phone,
       'role': role.name,
+      'jobTitle': jobTitle,
       'createdAt': Timestamp.fromDate(createdAt),
       'currentProjectId': currentProjectId,
+      'currentProjectName': currentProjectName, // 🔥 ÉCRITURE
       'lastCheckIn': lastCheckIn != null ? Timestamp.fromDate(lastCheckIn!) : null,
       'photoUrl': photoUrl,
     };

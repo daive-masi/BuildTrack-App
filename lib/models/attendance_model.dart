@@ -52,7 +52,7 @@ class Attendance {
     };
   }
 
-  // ⭐⭐ AJOUTEZ LA MÉTHODE COPYWITH ICI ⭐⭐
+
   Attendance copyWith({
     String? id,
     String? employeeId,

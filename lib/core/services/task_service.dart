@@ -5,10 +5,27 @@ import '../../models/task_model.dart';
 class TaskService with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// 🔹 ID de l'utilisateur courant (remplace plus tard par FirebaseAuth)
-  String get currentUserId => 'EMPLOYEE_001'; // temporaire pour test
+  // Récupérer les tâches par projet
+  Stream<List<ProjectTask>> getProjectTasks(String projectId) {
+    return _firestore
+        .collection('tasks')
+        .where('projectId', isEqualTo: projectId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) => ProjectTask.fromFirestore(doc.data(), doc.id))
+        .toList());
+  }
 
-  /// 🔹 Récupère les tâches assignées à un employé
+  // Récupérer une tâche (Live)
+  Stream<ProjectTask> getTaskStream(String taskId) {
+    return _firestore.collection('tasks').doc(taskId).snapshots().map((doc) {
+      if (!doc.exists) throw Exception("Tâche introuvable");
+      return ProjectTask.fromFirestore(doc.data()!, doc.id);
+    });
+  }
+
+  // Récupérer les tâches assignées à un employé (Global)
   Stream<List<ProjectTask>> getEmployeeTasks(String employeeId) {
     return _firestore
         .collection('tasks')
@@ -19,74 +36,82 @@ class TaskService with ChangeNotifier {
         .toList());
   }
 
-  /// 🔹 Injection de tâche test dans Firestore
-  Future<void> injectSampleTasks(String userId) async {
-    final tasks = [
-      ProjectTask(
-        id: '',
-        title: 'Préparer le terrain',
-        description: 'Niveler et nettoyer la zone avant le chantier.',
-        projectId: 'chantier_001',
-        assignedTo: userId,
-        status: TaskStatus.todo,
-        createdAt: DateTime.now(),
-        dueDate: DateTime.now().add(const Duration(days: 3)),
-      ),
-      ProjectTask(
-        id: '',
-        title: 'Installer les fondations',
-        description: 'Coulage du béton et vérification de la stabilité.',
-        projectId: 'chantier_001',
-        assignedTo: userId,
-        status: TaskStatus.inProgress,
-        createdAt: DateTime.now(),
-        dueDate: DateTime.now().add(const Duration(days: 5)),
-      ),
-    ];
-
-    for (final t in tasks) {
-      await _firestore.collection('tasks').add(t.toFirestore());
-    }
-    print('✅ Tâches injectées pour $userId.');
+  // Créer une tâche
+  Future<void> createTask(ProjectTask task) async {
+    await _firestore.collection('tasks').add(task.toFirestore());
   }
 
+  // --- LOGIQUE CHRONOMÈTRE ---
 
-  /// 🔹 Mise à jour du statut
+  // 1. Démarrer
+  Future<void> startTaskWork(String taskId, String workerId) async {
+    await _firestore.collection('tasks').doc(taskId).update({
+      'status': TaskStatus.inProgress.name,
+      'currentWorkerId': workerId,
+      'lastWorkStartTime': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  // 2. Pause
+  Future<void> pauseTaskWork(String taskId) async {
+    final docRef = _firestore.collection('tasks').doc(taskId);
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+      if (!snapshot.exists) throw Exception("Tâche non trouvée");
+      final task = ProjectTask.fromFirestore(snapshot.data()!, snapshot.id);
+
+      if (task.lastWorkStartTime == null) return;
+
+      // Calcul temps session (en minutes)
+      // Note: Pour plus de précision, on pourrait stocker en secondes ou millisecondes, mais minutes suffit souvent.
+      // Firestore Timestamp -> DateTime conversion locale pour diff
+      final startTime = task.lastWorkStartTime!;
+      final now = DateTime.now();
+      final sessionMinutes = now.difference(startTime).inMinutes;
+
+      transaction.update(docRef, {
+        'currentWorkerId': null,
+        'lastWorkStartTime': null,
+        'totalTimeSpentMinutes': task.totalTimeSpentMinutes + sessionMinutes,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    });
+  }
+
+  // 3. Finir
+  Future<void> finishTaskWork(String taskId, String finalComment) async {
+    await pauseTaskWork(taskId); // Arrête le chrono d'abord
+
+    final finishLog = TaskLog(
+      userName: 'Système',
+      comment: "Tâche terminée : $finalComment",
+      date: DateTime.now(),
+    );
+
+    await _firestore.collection('tasks').doc(taskId).update({
+      'status': TaskStatus.pending.name, // En attente de validation
+      'history': FieldValue.arrayUnion([finishLog.toMap()]),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  // --- UTILITAIRES ---
   Future<void> updateTaskStatus(String taskId, TaskStatus newStatus) async {
     await _firestore.collection('tasks').doc(taskId).update({
       'status': describeEnum(newStatus),
-      'updatedAt': Timestamp.now(),
+      'updatedAt': FieldValue.serverTimestamp(),
     });
-    print('🔄 Statut de la tâche $taskId mis à jour vers ${describeEnum(newStatus)}');
   }
 
-  Future<void> addTaskProof({
-    required String taskId,
-    required List<String> imageUrls,
-  }) async {
-    try {
-      final taskRef = _firestore.collection('tasks').doc(taskId);
-
-      await _firestore.runTransaction((transaction) async {
-        final snapshot = await transaction.get(taskRef);
-        if (!snapshot.exists) {
-          throw Exception("Tâche introuvable");
-        }
-
-        final data = snapshot.data()!;
-        final existingProofs = List<String>.from(data['proofImages'] ?? []);
-
-        final updatedProofs = [...existingProofs, ...imageUrls];
-
-        transaction.update(taskRef, {
-          'proofImages': updatedProofs,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      });
-    } catch (e) {
-      print('Erreur lors de l’ajout des preuves à la tâche : $e');
-      rethrow;
-    }
+  Future<void> addTaskLog(String taskId, TaskLog log) async {
+    await _firestore.collection('tasks').doc(taskId).update({
+      'history': FieldValue.arrayUnion([log.toMap()]),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
   }
 
+  Future<void> injectSampleTasks(String userId) async {
+    // Vide pour éviter les erreurs, plus nécessaire avec la vraie logique
+  }
 }

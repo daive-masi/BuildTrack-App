@@ -85,7 +85,6 @@ class _TaskBoardScreenState extends State<TaskBoardScreen> {
               );
             }).toList(),
 
-            // ✅ Obligatoire dans drag_and_drop_lists >= 0.4.0
             onItemReorder: (oldItemIndex, oldListIndex, newItemIndex, newListIndex) async {
               final newStatus = TaskStatus.values[newListIndex];
               final movedTask = grouped.values.elementAt(oldListIndex)[oldItemIndex];
@@ -93,7 +92,6 @@ class _TaskBoardScreenState extends State<TaskBoardScreen> {
               await taskService.updateTaskStatus(movedTask.id, newStatus);
             },
 
-            // ✅ Nouveau paramètre obligatoire (même si vide)
             onListReorder: (oldListIndex, newListIndex) {
               setState(() {
                 // Permet juste de reconstruire le widget sans crash

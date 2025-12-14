@@ -1,93 +1,82 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-/// 🔹 Enum des statuts de tâche
-enum TaskStatus {
-  pending,       // En attente de validation
-  todo,          // À faire
-  inProgress,    // En cours
-  blocked,       // Bloquée
-  completed,     // Terminée
-  done,          // (alias pour compatibilité)
-}
+enum TaskStatus { pending, todo, inProgress, blocked, completed }
 
 extension TaskStatusX on TaskStatus {
-  /// 🔹 Libellé lisible
   String get label {
     switch (this) {
-      case TaskStatus.pending:
-        return 'En attente';
-      case TaskStatus.todo:
-        return 'À faire';
-      case TaskStatus.inProgress:
-        return 'En cours';
-      case TaskStatus.blocked:
-        return 'Bloquée';
-      case TaskStatus.completed:
-      case TaskStatus.done:
-        return 'Terminée';
+      case TaskStatus.pending: return 'Validation';
+      case TaskStatus.todo: return 'À faire';
+      case TaskStatus.inProgress: return 'En cours';
+      case TaskStatus.blocked: return 'Bloquée';
+      case TaskStatus.completed: return 'Terminée';
     }
   }
 
-  /// 🔹 Couleur associée
-  Color get statusColor {
+  Color get backgroundColor {
     switch (this) {
-      case TaskStatus.pending:
-        return Colors.grey;
-      case TaskStatus.todo:
-        return Colors.orange;
-      case TaskStatus.inProgress:
-        return Colors.blue;
-      case TaskStatus.blocked:
-        return Colors.red;
-      case TaskStatus.completed:
-      case TaskStatus.done:
-        return Colors.green;
+      case TaskStatus.pending: return const Color(0xFFFFF3E0);
+      case TaskStatus.inProgress: return const Color(0xFFCFD8DC);
+      case TaskStatus.completed: return const Color(0xFFE8F5E9);
+      case TaskStatus.blocked: return const Color(0xFFFFEBEE);
+      default: return const Color(0xFFF5F5F5);
     }
   }
 
-  /// 🔹 Icône associée
-  IconData get statusIcon {
+  Color get textColor {
     switch (this) {
-      case TaskStatus.pending:
-        return Icons.hourglass_empty;
-      case TaskStatus.todo:
-        return Icons.list_alt;
-      case TaskStatus.inProgress:
-        return Icons.play_arrow;
-      case TaskStatus.blocked:
-        return Icons.block;
-      case TaskStatus.completed:
-      case TaskStatus.done:
-        return Icons.check_circle;
-    }
-  }
-
-  /// 🔹 Conversion string → enum
-  static TaskStatus fromString(String value) {
-    switch (value) {
-      case 'pending':
-        return TaskStatus.pending;
-      case 'todo':
-        return TaskStatus.todo;
-      case 'inProgress':
-        return TaskStatus.inProgress;
-      case 'blocked':
-        return TaskStatus.blocked;
-      case 'completed':
-      case 'done':
-        return TaskStatus.completed;
-      default:
-        return TaskStatus.todo;
+      case TaskStatus.pending: return Colors.orange[900]!;
+      case TaskStatus.inProgress: return Colors.blueGrey[900]!;
+      case TaskStatus.completed: return Colors.green[900]!;
+      case TaskStatus.blocked: return Colors.red[900]!;
+      default: return Colors.black87;
     }
   }
 }
 
-/// 🔹 Modèle de tâche
+class TaskLog {
+  final String userName;
+  final String comment;
+  final List<String> photos;
+  final DateTime date;
+
+  TaskLog({
+    required this.userName,
+    required this.comment,
+    this.photos = const [],
+    required this.date,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'userName': userName,
+    'comment': comment,
+    'photos': photos,
+    'date': Timestamp.fromDate(date),
+  };
+
+  factory TaskLog.fromMap(Map<String, dynamic> data) {
+    List<String> loadedPhotos = [];
+    if (data['photos'] != null) {
+      loadedPhotos = List<String>.from(data['photos']);
+    } else if (data['photoUrl'] != null) {
+      loadedPhotos.add(data['photoUrl']);
+    }
+
+    return TaskLog(
+      userName: data['userName'] ?? 'Inconnu',
+      comment: data['comment'] ?? '',
+      photos: loadedPhotos,
+      date: (data['date'] as Timestamp).toDate(),
+    );
+  }
+}
+
 class ProjectTask {
   final String id;
   final String title;
   final String description;
+  final String address;
   final String projectId;
   final String assignedTo;
   final TaskStatus status;
@@ -95,11 +84,18 @@ class ProjectTask {
   final DateTime? dueDate;
   final DateTime? updatedAt;
   final List<String> proofImages;
+  final List<TaskLog> history;
+
+  // --- NOUVEAUX CHAMPS TIMER ---
+  final String? currentWorkerId; // ID de celui qui a lancé le chrono
+  final DateTime? lastWorkStartTime; // Date de début du dernier "Start"
+  final int totalTimeSpentMinutes; // Temps total accumulé (en minutes)
 
   ProjectTask({
     required this.id,
     required this.title,
     required this.description,
+    required this.address,
     required this.projectId,
     required this.assignedTo,
     required this.status,
@@ -107,13 +103,17 @@ class ProjectTask {
     this.dueDate,
     this.updatedAt,
     this.proofImages = const [],
+    this.history = const [],
+    this.currentWorkerId,
+    this.lastWorkStartTime,
+    this.totalTimeSpentMinutes = 0,
   });
 
-  /// 🔹 Convertir en map Firestore
   Map<String, dynamic> toFirestore() {
     return {
       'title': title,
       'description': description,
+      'address': address,
       'projectId': projectId,
       'assignedTo': assignedTo,
       'status': status.name,
@@ -121,39 +121,42 @@ class ProjectTask {
       'dueDate': dueDate != null ? Timestamp.fromDate(dueDate!) : null,
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
       'proofImages': proofImages,
+      'history': history.map((e) => e.toMap()).toList(),
+      // Sauvegarde Timer
+      'currentWorkerId': currentWorkerId,
+      'lastWorkStartTime': lastWorkStartTime != null ? Timestamp.fromDate(lastWorkStartTime!) : null,
+      'totalTimeSpentMinutes': totalTimeSpentMinutes,
     };
   }
 
-  /// 🔹 Reconstituer depuis Firestore
   static ProjectTask fromFirestore(Map<String, dynamic> data, [String? id]) {
     return ProjectTask(
       id: id ?? '',
       title: data['title'] ?? '',
       description: data['description'] ?? '',
+      address: data['address'] ?? 'Adresse non spécifiée',
       projectId: data['projectId'] ?? '',
       assignedTo: data['assignedTo'] ?? '',
-      status: TaskStatusX.fromString(data['status'] ?? 'todo'),
+      status: TaskStatus.values.firstWhere((e) => e.name == data['status'], orElse: () => TaskStatus.todo),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      dueDate:
-      data['dueDate'] != null ? (data['dueDate'] as Timestamp).toDate() : null,
-      updatedAt: data['updatedAt'] != null
-          ? (data['updatedAt'] as Timestamp).toDate()
-          : null,
+      dueDate: data['dueDate'] != null ? (data['dueDate'] as Timestamp).toDate() : null,
+      updatedAt: data['updatedAt'] != null ? (data['updatedAt'] as Timestamp).toDate() : null,
       proofImages: List<String>.from(data['proofImages'] ?? []),
+      history: (data['history'] as List<dynamic>?)
+          ?.map((e) => TaskLog.fromMap(e as Map<String, dynamic>))
+          .toList() ?? [],
+      // Récupération Timer
+      currentWorkerId: data['currentWorkerId'],
+      lastWorkStartTime: data['lastWorkStartTime'] != null ? (data['lastWorkStartTime'] as Timestamp).toDate() : null,
+      totalTimeSpentMinutes: data['totalTimeSpentMinutes'] ?? 0,
     );
   }
 
-  /// 🔹 Date formatée
-  String get formattedDueDate {
-    if (dueDate == null) return 'Non définie';
-    final d = dueDate!;
-    return '${d.day}/${d.month}/${d.year}';
-  }
+  // Helper : Le chrono tourne-t-il ?
+  bool get isTimerRunning => currentWorkerId != null && lastWorkStartTime != null && status == TaskStatus.inProgress;
 
-  /// 🔹 En retard ?
-  bool get isOverdue {
-    if (dueDate == null) return false;
-    return dueDate!.isBefore(DateTime.now()) &&
-        (status != TaskStatus.completed && status != TaskStatus.done);
+  String get formattedDueDate {
+    if (dueDate == null) return 'Aucune';
+    return '${dueDate!.day}/${dueDate!.month}/${dueDate!.year}';
   }
 }

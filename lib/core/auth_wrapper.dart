@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/services/auth_service.dart';
+import '../core/services/project_service.dart'; // Import nécessaire pour le seed
 import '../features/auth/screens/employee_login_screen.dart';
 import '../features/employee/screens/employee_dashboard.dart';
+import '../features/admin/screens/admin_dashboard_screen.dart';
 import '../models/user_model.dart';
 
 class AuthWrapper extends StatelessWidget {
@@ -15,7 +17,7 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder<Employee?>(
       stream: authService.userStream,
       builder: (context, snapshot) {
-        // État de chargement initial
+        // 1. Chargement
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
@@ -31,36 +33,34 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        // Erreur de stream
+        // 2. Erreur
         if (snapshot.hasError) {
-          return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  const Text('Erreur de chargement', style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 8),
-                  Text(snapshot.error.toString()),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pushReplacementNamed(context, '/'),
-                    child: const Text('Réessayer'),
-                  ),
-                ],
-              ),
-            ),
-          );
+          return Scaffold(body: Center(child: Text("Erreur: ${snapshot.error}")));
         }
 
         final employee = snapshot.data;
 
+        // 3. Utilisateur Connecté
         if (employee != null) {
-          print('✅ Utilisateur connecté: ${employee.email}');
-          return const EmployeeDashboard();
-        } else {
-          print('🔒 Utilisateur non connecté - Affichage login');
+
+          // 🔥 AUTOMATISATION : On tente de remplir la base si elle est vide
+          // On utilise addPostFrameCallback pour ne pas bloquer l'affichage
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Provider.of<ProjectService>(context, listen: false).seedDatabase();
+          });
+
+          // Redirection selon le rôle
+          if (employee.role == UserRole.admin) {
+            print('👑 Admin connecté -> Dashboard Web');
+            return const AdminDashboardScreen();
+          } else {
+            print('👷 Employé connecté -> Dashboard Mobile');
+            return const EmployeeDashboard();
+          }
+        }
+
+        // 4. Pas connecté
+        else {
           return const EmployeeLoginScreen();
         }
       },

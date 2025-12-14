@@ -76,8 +76,8 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
               children: [
                 const SizedBox(height: 40),
 
-                // Logo et titre
-                Icon(Icons.construction, size: 80, color: Colors.blue[700]),
+                // Logo et titre avec couleur du thème
+                Icon(Icons.construction, size: 80, color: Theme.of(context).primaryColor),
                 const SizedBox(height: 20),
                 const Text(
                   'BuildTrack',
@@ -204,7 +204,8 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _signInWithEmail,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue[700],
+          backgroundColor: Theme.of(context).primaryColor, // Utilise le Bleu Nuit
+          foregroundColor: Colors.white,
         ),
         child: _isLoading
             ? const SizedBox(
@@ -257,7 +258,6 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
             : Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo Google simplifié
             Container(
               width: 20,
               height: 20,
@@ -294,7 +294,7 @@ class _EmployeeLoginScreenState extends State<EmployeeLoginScreen> {
           child: Text(
             'Créer un compte',
             style: TextStyle(
-              color: Colors.blue[700],
+              color: Theme.of(context).primaryColor, // Utilise le Bleu Nuit
               fontWeight: FontWeight.bold,
             ),
           ),
