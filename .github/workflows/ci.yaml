@@ -21,7 +21,16 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
-        working-directory: ./buildtrack_app
+
+      - name: Save dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
 
   analyze:
     name: Flutter Analyze
@@ -36,13 +45,21 @@ jobs:
         with:
           flutter-version: '3.27.3'
 
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
       - name: Install dependencies
         run: flutter pub get
-        working-directory: ./buildtrack_app
 
       - name: Analyze
         run: flutter analyze --no-pub || echo "⚠️ Analysis warnings ignored"
-        working-directory: ./buildtrack_app
 
   test:
     name: Flutter Test
@@ -57,13 +74,21 @@ jobs:
         with:
           flutter-version: '3.27.3'
 
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
       - name: Install dependencies
         run: flutter pub get
-        working-directory: ./buildtrack_app
 
       - name: Run tests
         run: flutter test
-        working-directory: ./buildtrack_app
 
   build:
     name: Build APK
@@ -81,27 +106,35 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
       - name: Create debug keystore
         run: |
+          mkdir -p android/app
           cd android
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           echo "✅ Keystore créé"
           ls -la debug.keystore
-        working-directory: ./buildtrack_app
 
       - name: Install dependencies
         run: flutter pub get
-        working-directory: ./buildtrack_app
 
       - name: Build APK
         run: flutter build apk --debug
-        working-directory: ./buildtrack_app
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: buildtrack_app/build/app/outputs/flutter-apk/app-debug.apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 1
 
   quality-checks:
@@ -112,8 +145,8 @@ jobs:
     steps:
       - name: Verify all quality checks
         run: |
-          if [[ "${{ needs.analyze.result }}" == "success" && 
-                "${{ needs.test.result }}" == "success" && 
+          if [[ "${{ needs.analyze.result }}" == "success" &&
+                "${{ needs.test.result }}" == "success" &&
                 "${{ needs.build.result }}" == "success" ]]; then
             echo "✅ All quality checks passed successfully"
             exit 0
